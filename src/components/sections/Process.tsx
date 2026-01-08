@@ -112,24 +112,8 @@ export function Process() {
       className="scroll-section relative overflow-hidden"
       style={{ minHeight: "150vh" }}
     >
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 bg-gradient-radial opacity-50" />
-
-      {/* Floating noise texture overlay */}
-      <div className="noise-overlay absolute inset-0" />
-
-      {/* Holographic grid pattern */}
-      <div
-        className="absolute inset-0 opacity-10"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(168, 85, 247, 0.3) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(168, 85, 247, 0.3) 1px, transparent 1px)
-          `,
-          backgroundSize: "60px 60px",
-          transform: "perspective(1000px) rotateX(60deg) translateZ(-200px)",
-        }}
-      />
+      {/* Simple gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-950/20 to-transparent" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-20">
         {/* Section Header */}
@@ -168,80 +152,40 @@ export function Process() {
                 ref={(el) => {
                   stepsRef.current[index] = el;
                 }}
-                className={`relative flex items-center gap-12 ${
+                className={`relative flex items-center gap-8 ${
                   index % 2 === 0 ? "flex-row" : "flex-row-reverse"
                 }`}
-                style={{ perspective: "1000px" }}
               >
-                {/* Step Card */}
+                {/* Step Card - Clean, readable design */}
                 <div className="group relative flex-1">
-                  <div
-                    className="glass-card relative overflow-hidden p-8 transition-all duration-500 hover:scale-105"
-                    style={{
-                      transformStyle: "preserve-3d",
-                      animation: `cardFloat ${2 + index * 0.3}s ease-in-out infinite alternate`,
-                    }}
-                  >
-                    {/* Holographic gradient overlay */}
-                    <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-br ${step.color} opacity-10 blur-2xl`}
-                      />
-                    </div>
-
-                    {/* Animated border glow */}
+                  <div className="relative rounded-2xl border border-purple-500/20 bg-black/60 p-8 transition-all duration-300 hover:border-purple-500/40 hover:bg-black/70">
+                    {/* Subtle gradient accent on hover */}
                     <div
-                      className={`absolute inset-0 rounded-xl bg-gradient-to-r ${step.accentColor} opacity-0 transition-opacity duration-500 group-hover:opacity-30 blur-xl`}
-                    />
-                    <div
-                      className={`absolute inset-0 rounded-xl border border-transparent bg-gradient-to-r ${step.accentColor} bg-clip-border opacity-0 transition-opacity duration-500 group-hover:opacity-50`}
-                      style={{
-                        WebkitMaskComposite: "xor",
-                        maskComposite: "exclude",
-                      }}
+                      className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${step.color} opacity-0 transition-opacity duration-300 group-hover:opacity-5`}
                     />
 
                     {/* Content */}
                     <div className="relative z-10">
                       {/* Step number with icon */}
                       <div className="mb-6 flex items-center gap-4">
-                        <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm">
-                          <span className="text-4xl">{step.icon}</span>
+                        <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-500/10">
+                          <span className="text-3xl">{step.icon}</span>
                         </div>
-                        <div
-                          className="text-7xl font-bold bg-gradient-to-br from-purple-300 to-purple-600 bg-clip-text text-transparent opacity-20"
-                          style={{
-                            fontFamily: "var(--font-jetbrains-mono)",
-                          }}
-                        >
+                        <span className="font-mono text-5xl font-bold text-purple-500/30">
                           {step.number}
-                        </div>
+                        </span>
                       </div>
 
                       {/* Title */}
-                      <h3
-                        className="mb-4 text-4xl font-bold tracking-tight transition-all duration-300 group-hover:text-primary"
-                        style={{
-                          fontFamily: "var(--font-orbitron)",
-                          fontWeight: 800,
-                        }}
-                      >
+                      <h3 className="mb-3 text-3xl font-bold text-white">
                         {step.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-lg leading-relaxed text-foreground-muted transition-colors duration-300 group-hover:text-foreground">
+                      <p className="text-base leading-relaxed text-gray-300">
                         {step.description}
                       </p>
                     </div>
-
-                    {/* Scan line effect */}
-                    <div
-                      className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                      style={{
-                        animation: "scanLine 3s ease-in-out infinite",
-                      }}
-                    />
                   </div>
                 </div>
 
@@ -267,35 +211,6 @@ export function Process() {
         </div>
       </div>
 
-      {/* Custom animations */}
-      <style jsx>{`
-        @keyframes cardFloat {
-          from {
-            transform: translateY(0px) translateZ(0px);
-          }
-          to {
-            transform: translateY(-10px) translateZ(20px);
-          }
-        }
-
-        @keyframes scanLine {
-          0% {
-            transform: translateY(0);
-          }
-          100% {
-            transform: translateY(400px);
-          }
-        }
-
-        @keyframes pulseGlow {
-          0%, 100% {
-            opacity: 0.3;
-          }
-          50% {
-            opacity: 0.6;
-          }
-        }
-      `}</style>
     </section>
   );
 }
