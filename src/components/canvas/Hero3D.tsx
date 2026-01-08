@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useScroll } from "@react-three/drei";
 import * as THREE from "three";
 import { Particles } from "./Particles";
 import { FloatingShapes } from "./FloatingShapes";
@@ -14,9 +13,8 @@ interface Hero3DProps {
   device: DeviceCapabilities;
 }
 
-export function Hero3D({ scrollProgress: externalScrollProgress, device }: Hero3DProps) {
-  const { viewport, pointer } = useThree();
-  const scroll = useScroll();
+export function Hero3D({ scrollProgress: externalScrollProgress = 0, device }: Hero3DProps) {
+  const { pointer } = useThree();
 
   // Get optimal particle count based on device
   const particleCount = getOptimalParticleCount(device);
@@ -41,8 +39,8 @@ export function Hero3D({ scrollProgress: externalScrollProgress, device }: Hero3
     const lerpSpeed = device.isMobile ? 0.02 : 0.05;
     mouseRef.current.lerp(targetMouseRef.current, lerpSpeed);
 
-    // Use external scroll progress if provided (from GSAP), otherwise fall back to drei scroll
-    const targetScroll = externalScrollProgress ?? (scroll?.offset || 0);
+    // Use external scroll progress from GSAP (native page scroll)
+    const targetScroll = externalScrollProgress;
 
     // Smooth scroll interpolation for buttery smooth transitions
     smoothScrollRef.current = THREE.MathUtils.lerp(

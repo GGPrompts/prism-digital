@@ -39,7 +39,9 @@ export function useGSAPScroll() {
 
     let updateCount = 0;
     const updateScrollState = () => {
-      const scrollY = window.scrollY;
+      // Some browsers can report a tiny non-zero scrollY on load (e.g. address bar behavior).
+      const rawScrollY = window.scrollY;
+      const scrollY = rawScrollY < 4 ? 0 : rawScrollY;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       const maxScroll = documentHeight - windowHeight;

@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { Preload, ScrollControls, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
+import { Preload, PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
 import { Leva } from "leva";
 import { Suspense, useState, useEffect } from "react";
 import { Scene } from "./Scene";
@@ -71,13 +71,8 @@ export function CanvasWrapper() {
             flipflops={3} // Number of performance changes before adjusting
             onFallback={() => setDpr(0.5)} // Emergency fallback for very low-end devices
           >
-            <ScrollControls
-              pages={3}
-              damping={device.isMobile ? 0.15 : 0.1}
-              infinite={false}
-            >
-              <Scene />
-            </ScrollControls>
+            {/* Using native scroll via GSAP (not drei ScrollControls) */}
+            <Scene />
           </PerformanceMonitor>
           <Preload all />
         </Suspense>
