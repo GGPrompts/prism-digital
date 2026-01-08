@@ -5,6 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useScroll } from "@react-three/drei";
 import * as THREE from "three";
 import { Particles } from "./Particles";
+import { FloatingShapes } from "./FloatingShapes";
 import { getOptimalParticleCount } from "@/hooks/useDeviceDetection";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
@@ -103,6 +104,13 @@ export function Hero3D({ scrollProgress: externalScrollProgress, device }: Hero3
           device={device}
         />
       </group>
+
+      {/* Floating geometric shapes with mouse parallax */}
+      <FloatingShapes
+        mouse={mouseRef.current}
+        scrollOffset={scrollOffsetRef.current}
+        device={device}
+      />
     </group>
   );
 }
