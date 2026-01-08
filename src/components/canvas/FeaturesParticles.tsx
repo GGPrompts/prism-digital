@@ -2,57 +2,73 @@
 
 import { useRef, useMemo, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useScroll } from "@react-three/drei";
 import * as THREE from "three";
+import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
+
+interface FeaturesParticlesProps {
+  scrollProgress?: number;
+  device: DeviceCapabilities;
+}
 
 /**
  * Enhanced particle system that morphs during features section
- * Transitions from organic blob to structured grid pattern
+ * Transitions through 3 formations: organic cloud → structured grid → helix spiral
+ * Each formation corresponds to a feature card
  */
-export function FeaturesParticles() {
+export function FeaturesParticles({ scrollProgress = 0, device }: FeaturesParticlesProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null!);
-  const scroll = useScroll();
 
-  const count = 2000;
+  // Reduce particle count on mobile for performance
+  const count = device.isMobile ? 800 : 2000;
 
   // Pre-allocate reusable objects
   const tempObject = useMemo(() => new THREE.Object3D(), []);
   const tempColor = useMemo(() => new THREE.Color(), []);
 
-  // Initialize particle data with dual positions (organic + grid)
+  // Initialize particle data with 3 formations: organic cloud, grid, helix
   const particles = useMemo(() => {
-    const data = new Float32Array(count * 10);
-    // x, y, z (organic), x2, y2, z2 (grid), phase, speed, size, colorIdx
+    // 13 floats per particle: 3 positions x 3 formations + 4 animation props
+    const data = new Float32Array(count * 13);
+    // Layout: x1,y1,z1 (cloud), x2,y2,z2 (grid), x3,y3,z3 (helix), phase, speed, size, colorIdx
 
     for (let i = 0; i < count; i++) {
-      const idx = i * 10;
+      const idx = i * 13;
+      const t = i / count; // normalized index 0-1
 
-      // Organic position (sphere)
-      const radius = 4 + Math.random() * 6;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 2 - 1);
+      // Formation 1: Organic cloud (sphere with noise)
+      const cloudRadius = 3 + Math.random() * 5;
+      const theta1 = Math.random() * Math.PI * 2;
+      const phi1 = Math.acos(Math.random() * 2 - 1);
+      data[idx + 0] = cloudRadius * Math.sin(phi1) * Math.cos(theta1);
+      data[idx + 1] = cloudRadius * Math.sin(phi1) * Math.sin(theta1);
+      data[idx + 2] = cloudRadius * Math.cos(phi1);
 
-      data[idx + 0] = radius * Math.sin(phi) * Math.cos(theta);
-      data[idx + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      data[idx + 2] = radius * Math.cos(phi);
+      // Formation 2: Structured 3D grid
+      const gridDim = Math.ceil(Math.cbrt(count));
+      const gridSpacing = 0.6;
+      const gx = i % gridDim;
+      const gy = Math.floor((i / gridDim) % gridDim);
+      const gz = Math.floor(i / (gridDim * gridDim));
+      data[idx + 3] = (gx - gridDim / 2) * gridSpacing;
+      data[idx + 4] = (gy - gridDim / 2) * gridSpacing;
+      data[idx + 5] = (gz - gridDim / 2) * gridSpacing;
 
-      // Grid position (structured)
-      const gridSize = 15;
-      const gridSpacing = 0.8;
-      const gridIdx = Math.floor(Math.cbrt(i));
-      const layer = Math.floor(gridIdx / gridSize);
-      const row = Math.floor((gridIdx % gridSize) / Math.sqrt(gridSize));
-      const col = gridIdx % Math.sqrt(gridSize);
-
-      data[idx + 3] = (col - gridSize / 2) * gridSpacing;
-      data[idx + 4] = (row - gridSize / 2) * gridSpacing;
-      data[idx + 5] = (layer - gridSize / 2) * gridSpacing;
+      // Formation 3: Double helix spiral (DNA-like)
+      const helixHeight = 12;
+      const helixRadius = 3;
+      const helixTurns = 4;
+      const strand = i % 2; // Alternate between two strands
+      const helixT = t * helixTurns * Math.PI * 2;
+      const helixOffset = strand * Math.PI; // Second strand offset by 180 degrees
+      data[idx + 6] = Math.cos(helixT + helixOffset) * helixRadius;
+      data[idx + 7] = (t - 0.5) * helixHeight;
+      data[idx + 8] = Math.sin(helixT + helixOffset) * helixRadius;
 
       // Animation properties
-      data[idx + 6] = Math.random() * Math.PI * 2; // phase
-      data[idx + 7] = 0.5 + Math.random() * 0.5; // speed
-      data[idx + 8] = 0.02 + Math.random() * 0.03; // size
-      data[idx + 9] = Math.floor(Math.random() * 5); // colorIdx
+      data[idx + 9] = Math.random() * Math.PI * 2; // phase
+      data[idx + 10] = 0.5 + Math.random() * 0.5; // speed
+      data[idx + 11] = 0.02 + Math.random() * 0.03; // size
+      data[idx + 12] = Math.floor(Math.random() * 5); // colorIdx
     }
 
     return data;
@@ -70,63 +86,95 @@ export function FeaturesParticles() {
     []
   );
 
+  // Smoothed scroll value for buttery transitions
+  const smoothScrollRef = useRef(0);
+
   useFrame((state) => {
     if (!meshRef.current) return;
 
     const time = state.clock.getElapsedTime();
-    const scrollOffset = scroll?.offset || 0;
 
-    // Features section is roughly 1/3 to 2/3 of scroll (page 2 of 3)
+    // Smooth scroll interpolation
+    smoothScrollRef.current = THREE.MathUtils.lerp(
+      smoothScrollRef.current,
+      scrollProgress,
+      0.08
+    );
+    const scroll = smoothScrollRef.current;
+
+    // Features section spans roughly 0.2 to 0.6 of total scroll
+    // Calculate progress through features section (0 to 1)
+    const featuresStart = 0.15;
+    const featuresEnd = 0.65;
     const featuresProgress = Math.max(
       0,
-      Math.min(1, (scrollOffset - 0.33) / 0.33)
+      Math.min(1, (scroll - featuresStart) / (featuresEnd - featuresStart))
     );
-    const morph = Math.sin(featuresProgress * Math.PI); // Smooth 0->1->0 curve
+
+    // Three formations at 0%, 50%, and 100% of features progress
+    // Formation 1 (cloud): 0-33%
+    // Formation 2 (grid): 33-66%
+    // Formation 3 (helix): 66-100%
+    const phase1 = Math.max(0, Math.min(1, featuresProgress * 3)); // 0->1 for first third
+    const phase2 = Math.max(0, Math.min(1, (featuresProgress - 0.33) * 3)); // 0->1 for second third
+    const phase3 = Math.max(0, Math.min(1, (featuresProgress - 0.66) * 3)); // 0->1 for final third
+
+    // Weights for each formation (smooth blending)
+    const easeInOut = (t: number) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    const w1 = 1 - easeInOut(phase1);
+    const w2 = easeInOut(phase1) * (1 - easeInOut(phase2));
+    const w3 = easeInOut(phase2);
+
+    // Visibility: only show during features section
+    const visibility = featuresProgress > 0 && featuresProgress < 1 ? 1 : 0;
 
     for (let i = 0; i < count; i++) {
-      const idx = i * 10;
+      const idx = i * 13;
 
-      // Get positions
-      const x1 = particles[idx + 0];
-      const y1 = particles[idx + 1];
-      const z1 = particles[idx + 2];
-      const x2 = particles[idx + 3];
-      const y2 = particles[idx + 4];
-      const z2 = particles[idx + 5];
+      // Get all three formation positions
+      const x1 = particles[idx + 0], y1 = particles[idx + 1], z1 = particles[idx + 2];
+      const x2 = particles[idx + 3], y2 = particles[idx + 4], z2 = particles[idx + 5];
+      const x3 = particles[idx + 6], y3 = particles[idx + 7], z3 = particles[idx + 8];
 
-      const phase = particles[idx + 6];
-      const speed = particles[idx + 7];
-      const size = particles[idx + 8];
-      const colorIdx = particles[idx + 9];
+      const phase = particles[idx + 9];
+      const speed = particles[idx + 10];
+      const size = particles[idx + 11];
+      const colorIdx = particles[idx + 12];
 
-      // Morph between organic and grid
-      const x = THREE.MathUtils.lerp(x1, x2, morph);
-      const y = THREE.MathUtils.lerp(y1, y2, morph);
-      const z = THREE.MathUtils.lerp(z1, z2, morph);
+      // Blend between all three formations using weights
+      const x = x1 * w1 + x2 * w2 + x3 * w3;
+      const y = y1 * w1 + y2 * w2 + y3 * w3;
+      const z = z1 * w1 + z2 * w2 + z3 * w3;
 
-      // Add wave motion during transition
-      const wave =
-        Math.sin(time * speed + phase + x * 0.5) * morph * (1 - morph) * 2;
+      // Add wave motion during transitions
+      const transitionAmount = Math.min(w1, 1 - w1) + Math.min(w2, 1 - w2) + Math.min(w3, 1 - w3);
+      const wave = Math.sin(time * speed + phase + x * 0.3) * transitionAmount * 0.8;
 
       tempObject.position.set(x, y + wave, z);
 
-      // Scale based on transition
-      const baseScale = size * (1 + morph * 0.5);
+      // Scale: larger during transitions, smaller on mobile
+      const mobileScale = device.isMobile ? 0.8 : 1;
+      const baseScale = size * (1 + transitionAmount * 0.3) * mobileScale * visibility;
       tempObject.scale.setScalar(baseScale);
 
-      // Rotation during transition
-      tempObject.rotation.x = time * speed * morph;
-      tempObject.rotation.y = time * speed * 0.7 * morph;
+      // Rotation based on formation and time
+      tempObject.rotation.x = time * speed * 0.3 * w3;
+      tempObject.rotation.y = time * speed * 0.5 * (w2 + w3);
 
       tempObject.updateMatrix();
       meshRef.current.setMatrixAt(i, tempObject.matrix);
 
-      // Color with transition effects
-      tempColor.copy(colorPalette[Math.floor(colorIdx)]);
+      // Color transitions between formations
+      tempColor.copy(colorPalette[Math.floor(colorIdx) % colorPalette.length]);
 
-      // Brightness modulation
-      const brightness = 0.8 + Math.sin(time * 2 + phase) * 0.2 + morph * 0.3;
+      // Brightness modulation - brighter during grid, cyan tint during helix
+      const brightness = 0.7 + Math.sin(time * 2 + phase) * 0.2 + w2 * 0.3 + w3 * 0.2;
       tempColor.multiplyScalar(brightness);
+
+      // Add cyan tint for helix formation
+      if (w3 > 0.1) {
+        tempColor.lerp(new THREE.Color("#22d3ee"), w3 * 0.3);
+      }
 
       meshRef.current.setColorAt(i, tempColor);
     }
@@ -136,8 +184,9 @@ export function FeaturesParticles() {
       meshRef.current.instanceColor.needsUpdate = true;
     }
 
-    // Rotate entire system during features
-    meshRef.current.rotation.y = time * 0.1 + featuresProgress * Math.PI;
+    // Rotate entire system based on scroll and formation
+    meshRef.current.rotation.y = time * 0.08 + featuresProgress * Math.PI * 0.5;
+    meshRef.current.rotation.x = Math.sin(time * 0.1) * 0.1 * (w2 + w3);
   });
 
   // Resource cleanup on unmount
