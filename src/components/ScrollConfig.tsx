@@ -40,12 +40,13 @@ export function ScrollConfig({
     });
 
     // Optional: Enable scroll snapping
+    let snapTrigger: ReturnType<typeof ScrollTrigger.create> | undefined;
     if (enableSnap) {
       // Get all sections with scroll-section class
       const sections = gsap.utils.toArray(".scroll-section");
 
       if (sections.length > 0) {
-        ScrollTrigger.create({
+        snapTrigger = ScrollTrigger.create({
           snap: {
             snapTo: 1 / (sections.length - 1),
             duration: { min: snapDuration, max: snapDuration * 1.5 },
@@ -70,7 +71,7 @@ export function ScrollConfig({
     // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      snapTrigger?.kill();
     };
   }, [enableSnap, snapDuration]);
 

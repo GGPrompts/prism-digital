@@ -206,7 +206,14 @@ export function FeaturesParticles({ scrollProgress = 0, device }: FeaturesPartic
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
       <sphereGeometry args={[1, 8, 8]} />
-      <meshBasicMaterial toneMapped={false} />
+      <meshBasicMaterial
+        toneMapped={false}
+        transparent
+        opacity={0.3}
+        depthWrite={false}
+        vertexColors
+        blending={THREE.AdditiveBlending}
+      />
     </instancedMesh>
   );
 }

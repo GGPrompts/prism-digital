@@ -182,7 +182,14 @@ export function Particles({
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
       <sphereGeometry args={[1, geometrySegments, geometrySegments]} />
-      <meshBasicMaterial toneMapped={false} />
+      <meshBasicMaterial
+        toneMapped={false}
+        transparent
+        opacity={0.35}
+        depthWrite={false}
+        vertexColors
+        blending={THREE.AdditiveBlending}
+      />
     </instancedMesh>
   );
 }

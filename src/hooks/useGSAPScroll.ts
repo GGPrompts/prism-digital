@@ -22,13 +22,14 @@ export interface GSAPScrollState {
  * Provides smooth scroll state for 3D scene integration
  */
 export function useGSAPScroll() {
-  const [scrollState, setScrollState] = useState<GSAPScrollState>({
+  // Initialize with 0 to ensure 3D elements are visible on first render
+  const [scrollState, setScrollState] = useState<GSAPScrollState>(() => ({
     scrollY: 0,
     scrollProgress: 0,
     direction: "down",
     velocity: 0,
     section: "hero",
-  });
+  }));
 
   const velocityRef = useRef(0);
   const lastScrollY = useRef(0);
@@ -36,12 +37,19 @@ export function useGSAPScroll() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    let updateCount = 0;
     const updateScrollState = () => {
       const scrollY = window.scrollY;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       const maxScroll = documentHeight - windowHeight;
-      const scrollProgress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
+      const scrollProgress = maxScroll > 0 ? Math.min(Math.max(scrollY / maxScroll, 0), 1) : 0;
+
+      // Debug: Log first few updates and any time scrollProgress jumps significantly
+      updateCount++;
+      if (updateCount <= 5 || (updateCount % 30 === 0 && updateCount <= 150)) {
+        console.log(`[useGSAPScroll] Update #${updateCount}: scrollY=${scrollY}, windowH=${windowHeight}, docH=${documentHeight}, maxScroll=${maxScroll}, progress=${scrollProgress.toFixed(3)}`);
+      }
 
       // Calculate velocity
       const delta = scrollY - lastScrollY.current;
@@ -73,7 +81,7 @@ export function useGSAPScroll() {
     };
 
     // Create a ScrollTrigger that updates on every scroll event
-    ScrollTrigger.create({
+    const trigger = ScrollTrigger.create({
       trigger: "body",
       start: "top top",
       end: "bottom bottom",
@@ -88,7 +96,7 @@ export function useGSAPScroll() {
     updateScrollState();
 
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      trigger.kill();
       window.removeEventListener("scroll", updateScrollState);
       window.removeEventListener("resize", updateScrollState);
     };
@@ -104,7 +112,7 @@ export function useScrollSnap(enabled: boolean = true) {
   useEffect(() => {
     if (typeof window === "undefined" || !enabled) return;
 
-    ScrollTrigger.create({
+    const trigger = ScrollTrigger.create({
       snap: {
         snapTo: "labelsDirectional",
         duration: { min: 0.2, max: 0.8 },
@@ -114,7 +122,7 @@ export function useScrollSnap(enabled: boolean = true) {
     });
 
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      trigger.kill();
     };
   }, [enabled]);
 }
