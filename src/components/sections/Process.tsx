@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ProcessIcon3D } from "@/components/canvas/ProcessIcon3D";
+import { useDeviceDetection } from "@/hooks/useDeviceDetection";
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
@@ -15,12 +17,23 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-const processSteps = [
+type IconType = "discovery" | "design" | "develop" | "deploy";
+
+const processSteps: {
+  number: string;
+  title: string;
+  description: string;
+  icon: string;
+  iconType: IconType;
+  color: string;
+  accentColor: string;
+}[] = [
   {
     number: "01",
     title: "Discovery",
     description: "We dive deep into your vision, understanding goals, audience, and technical requirements to craft the perfect 3D experience.",
     icon: "🔍",
+    iconType: "discovery",
     color: "from-purple-500 via-violet-500 to-purple-600",
     accentColor: "from-cyan-400 to-blue-500"
   },
@@ -29,6 +42,7 @@ const processSteps = [
     title: "Design",
     description: "Our team creates stunning 3D prototypes and interactive mockups, refining every detail until it exceeds expectations.",
     icon: "✨",
+    iconType: "design",
     color: "from-violet-500 via-purple-500 to-fuchsia-500",
     accentColor: "from-pink-400 to-purple-500"
   },
@@ -37,6 +51,7 @@ const processSteps = [
     title: "Develop",
     description: "With cutting-edge WebGL and React Three Fiber, we build high-performance 3D web experiences optimized for all devices.",
     icon: "⚡",
+    iconType: "develop",
     color: "from-fuchsia-500 via-pink-500 to-purple-600",
     accentColor: "from-blue-400 to-cyan-500"
   },
@@ -45,6 +60,7 @@ const processSteps = [
     title: "Deploy",
     description: "We launch your 3D masterpiece with rigorous testing, performance optimization, and continuous support to ensure success.",
     icon: "🚀",
+    iconType: "deploy",
     color: "from-pink-500 via-purple-500 to-violet-600",
     accentColor: "from-purple-400 to-pink-500"
   }
@@ -57,6 +73,10 @@ export function Process() {
   const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
   const indicatorsRef = useRef<(HTMLDivElement | null)[]>([]);
   const headerRef = useRef<HTMLDivElement>(null);
+  const device = useDeviceDetection();
+
+  // Determine if we should use 3D icons (desktop/tablet with good GPU)
+  const use3DIcons = !device.isMobile && device.gpu !== "low";
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -195,6 +215,7 @@ export function Process() {
   return (
     <section
       ref={sectionRef}
+      id="process"
       className="scroll-section relative overflow-hidden"
       style={{ minHeight: "150vh" }}
     >
@@ -257,10 +278,19 @@ export function Process() {
 
                     {/* Content */}
                     <div className="relative z-10">
-                      {/* Step number with icon */}
+                      {/* Step number with 3D icon */}
                       <div className="mb-6 flex items-center gap-4">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-purple-400/40 bg-purple-500/20">
-                          <span className="text-3xl">{step.icon}</span>
+                        <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl border border-purple-500/30 bg-purple-500/10">
+                          {use3DIcons ? (
+                            <ProcessIcon3D
+                              type={step.iconType}
+                              accentColor={step.accentColor}
+                              fallbackIcon={step.icon}
+                              isMobile={device.isMobile}
+                            />
+                          ) : (
+                            <span className="text-3xl">{step.icon}</span>
+                          )}
                         </div>
                         <span className="font-mono text-5xl font-bold text-purple-400/50">
                           {step.number}
