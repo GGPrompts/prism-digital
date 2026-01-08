@@ -1,0 +1,487 @@
+@import "tailwindcss";
+
+/* =============================================================================
+   PRISM DIGITAL - Design System
+   Purple theme optimized for 3D scenes with glass effects and glow accents
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Color Palette - Dark-first design for 3D contrast
+   ----------------------------------------------------------------------------- */
+:root {
+  /* Background layers - deep dark for 3D canvas contrast */
+  --background: #050507;
+  --background-secondary: #0a0a0f;
+  --background-tertiary: #12121a;
+
+  /* Foreground / Text */
+  --foreground: #f4f4f5;
+  --foreground-muted: #a1a1aa;
+  --foreground-subtle: #71717a;
+
+  /* Primary Purple Palette */
+  --primary: #a855f7;
+  --primary-hover: #c084fc;
+  --primary-muted: #7c3aed;
+  --primary-subtle: #6d28d9;
+  --primary-dark: #4c1d95;
+
+  /* Accent colors for variety */
+  --accent-cyan: #22d3ee;
+  --accent-pink: #f472b6;
+  --accent-blue: #3b82f6;
+
+  /* Glow effects - used for 3D highlights and UI accents */
+  --glow-primary: rgba(168, 85, 247, 0.5);
+  --glow-primary-strong: rgba(168, 85, 247, 0.8);
+  --glow-primary-subtle: rgba(168, 85, 247, 0.2);
+  --glow-cyan: rgba(34, 211, 238, 0.5);
+  --glow-pink: rgba(244, 114, 182, 0.5);
+
+  /* Glass/blur effect tokens */
+  --glass-background: rgba(10, 10, 15, 0.7);
+  --glass-background-light: rgba(18, 18, 26, 0.6);
+  --glass-border: rgba(168, 85, 247, 0.2);
+  --glass-border-hover: rgba(168, 85, 247, 0.4);
+
+  /* Surface colors for cards/overlays */
+  --surface: rgba(18, 18, 26, 0.8);
+  --surface-hover: rgba(28, 28, 40, 0.8);
+  --surface-active: rgba(38, 38, 54, 0.8);
+
+  /* Borders */
+  --border: rgba(113, 113, 122, 0.2);
+  --border-hover: rgba(168, 85, 247, 0.3);
+
+  /* Semantic colors */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* Shadows and depth */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px var(--glow-primary-subtle);
+  --shadow-glow-strong: 0 0 40px var(--glow-primary);
+
+  /* Animation timing */
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+
+  /* Spacing scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Z-index layers */
+  --z-canvas: 0;
+  --z-content: 10;
+  --z-overlay: 20;
+  --z-modal: 30;
+  --z-tooltip: 40;
+  --z-max: 50;
+}
+
+/* -----------------------------------------------------------------------------
+   Tailwind Theme Configuration
+   ----------------------------------------------------------------------------- */
+@theme inline {
+  /* Colors */
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-muted: var(--primary-muted);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-dark: var(--primary-dark);
+
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-pink: var(--accent-pink);
+  --color-accent-blue: var(--accent-blue);
+
+  --color-glow-primary: var(--glow-primary);
+  --color-glow-cyan: var(--glow-cyan);
+  --color-glow-pink: var(--glow-pink);
+
+  --color-glass-bg: var(--glass-background);
+  --color-glass-border: var(--glass-border);
+
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+
+  /* Typography - Using system fonts with display and sans variants */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* Font sizes with line heights */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
+  --text-8xl: 6rem;
+  --text-9xl: 8rem;
+
+  /* Shadows */
+  --shadow-glow: var(--shadow-glow);
+  --shadow-glow-strong: var(--shadow-glow-strong);
+
+  /* Blur values for glass effects */
+  --blur-xs: 4px;
+  --blur-sm: 8px;
+  --blur-md: 12px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+  --blur-2xl: 40px;
+
+  /* Animation */
+  --ease-out-expo: var(--ease-out-expo);
+  --ease-in-out-expo: var(--ease-in-out-expo);
+}
+
+/* -----------------------------------------------------------------------------
+   Base Styles
+   ----------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* -----------------------------------------------------------------------------
+   Typography
+   ----------------------------------------------------------------------------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+h1 { font-size: var(--text-6xl); }
+h2 { font-size: var(--text-5xl); }
+h3 { font-size: var(--text-4xl); }
+h4 { font-size: var(--text-3xl); }
+h5 { font-size: var(--text-2xl); }
+h6 { font-size: var(--text-xl); }
+
+@media (max-width: 768px) {
+  h1 { font-size: var(--text-4xl); }
+  h2 { font-size: var(--text-3xl); }
+  h3 { font-size: var(--text-2xl); }
+  h4 { font-size: var(--text-xl); }
+  h5 { font-size: var(--text-lg); }
+  h6 { font-size: var(--text-base); }
+}
+
+p {
+  color: var(--foreground-muted);
+  line-height: 1.7;
+}
+
+/* Text readability over 3D backgrounds */
+.text-readable {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.text-glow {
+  text-shadow: 0 0 20px var(--glow-primary), 0 0 40px var(--glow-primary-subtle);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 50%, var(--accent-pink) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* -----------------------------------------------------------------------------
+   Glass Morphism Components
+   ----------------------------------------------------------------------------- */
+.glass {
+  background: var(--glass-background);
+  backdrop-filter: blur(var(--blur-lg));
+  -webkit-backdrop-filter: blur(var(--blur-lg));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.glass-light {
+  background: var(--glass-background-light);
+  backdrop-filter: blur(var(--blur-md));
+  -webkit-backdrop-filter: blur(var(--blur-md));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.glass-card {
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-xl));
+  -webkit-backdrop-filter: blur(var(--blur-xl));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  transition: all var(--duration-normal) var(--ease-out-expo);
+}
+
+.glass-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+/* -----------------------------------------------------------------------------
+   Glow Effects
+   ----------------------------------------------------------------------------- */
+.glow {
+  box-shadow: var(--shadow-glow);
+}
+
+.glow-strong {
+  box-shadow: var(--shadow-glow-strong);
+}
+
+.glow-text {
+  text-shadow: 0 0 10px var(--glow-primary), 0 0 20px var(--glow-primary-subtle);
+}
+
+.glow-border {
+  border: 1px solid var(--primary);
+  box-shadow:
+    0 0 5px var(--glow-primary-subtle),
+    inset 0 0 5px var(--glow-primary-subtle);
+}
+
+/* Animated glow */
+.glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow-pulse {
+  from {
+    box-shadow: 0 0 10px var(--glow-primary-subtle), 0 0 20px transparent;
+  }
+  to {
+    box-shadow: 0 0 20px var(--glow-primary), 0 0 40px var(--glow-primary-subtle);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Button Styles
+   ----------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-normal) var(--ease-out-expo);
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-muted) 100%);
+  color: white;
+  box-shadow: 0 4px 14px var(--glow-primary-subtle);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
+  box-shadow: 0 6px 20px var(--glow-primary);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--surface);
+  border-color: var(--border-hover);
+}
+
+.btn-glass {
+  background: var(--glass-background);
+  backdrop-filter: blur(var(--blur-sm));
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  color: var(--foreground);
+  border: 1px solid var(--glass-border);
+}
+
+.btn-glass:hover {
+  background: var(--glass-background-light);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+/* -----------------------------------------------------------------------------
+   3D Canvas Integration
+   ----------------------------------------------------------------------------- */
+.canvas-container {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-canvas);
+}
+
+.content-overlay {
+  position: relative;
+  z-index: var(--z-content);
+  pointer-events: none;
+}
+
+.content-overlay > * {
+  pointer-events: auto;
+}
+
+/* Ensure text remains readable over any 3D content */
+.over-canvas {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* -----------------------------------------------------------------------------
+   Scroll Sections
+   ----------------------------------------------------------------------------- */
+.scroll-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-2xl);
+}
+
+/* Fade in on scroll helper */
+.fade-in-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity var(--duration-slow) var(--ease-out-expo),
+              transform var(--duration-slow) var(--ease-out-expo);
+}
+
+.fade-in-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* -----------------------------------------------------------------------------
+   Utility Classes
+   ----------------------------------------------------------------------------- */
+/* Focus states for accessibility */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--primary);
+  color: white;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-dark);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-muted);
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Noise texture overlay for depth */
+.noise-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Gradient backgrounds */
+.bg-gradient-radial {
+  background: radial-gradient(ellipse at center, var(--background-tertiary) 0%, var(--background) 70%);
+}
+
+.bg-gradient-glow {
+  background: radial-gradient(ellipse at 50% 0%, var(--glow-primary-subtle) 0%, transparent 50%);
+}
