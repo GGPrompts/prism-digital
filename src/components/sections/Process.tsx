@@ -265,15 +265,13 @@ export function Process() {
                   index % 2 === 0 ? "flex-row" : "flex-row-reverse"
                 }`}
               >
-                {/* Step Card - Glass-morphism design with high visibility */}
+                {/* Step Card - Glassmorphism design */}
                 <div className="group relative flex-1">
-                  {/* Outer glow effect */}
-                  <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-purple-500/30 via-violet-500/20 to-fuchsia-500/30 opacity-60 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
-
-                  <div className="relative rounded-2xl border border-purple-400/40 bg-gray-900/90 p-8 shadow-xl shadow-purple-500/10 backdrop-blur-sm transition-all duration-300 hover:border-purple-400/60 hover:shadow-purple-500/20">
+                  <div className="glass-card relative p-8">
                     {/* Subtle gradient accent on hover */}
                     <div
-                      className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${step.color} opacity-5 transition-opacity duration-300 group-hover:opacity-10`}
+                      className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${step.color} opacity-0 transition-opacity duration-300 group-hover:opacity-5 pointer-events-none`}
+                      style={{ zIndex: 1 }}
                     />
 
                     {/* Content */}

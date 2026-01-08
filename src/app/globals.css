@@ -397,18 +397,116 @@ p {
 }
 
 .glass-card {
-  background: var(--surface);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--glass-border);
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(18, 18, 26, 0.9) 0%,
+    rgba(10, 10, 15, 0.85) 100%
+  );
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
   border-radius: var(--radius-xl);
+  transition: all var(--duration-normal) var(--ease-out-expo);
+  /* Gradient border via pseudo-element */
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  /* Inner highlight for premium glass feel */
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 20px 0 rgba(168, 85, 247, 0.03),
+    0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Gradient border using pseudo-element */
+.glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(168, 85, 247, 0.3) 0%,
+    rgba(34, 211, 238, 0.2) 50%,
+    rgba(168, 85, 247, 0.1) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
   transition: all var(--duration-normal) var(--ease-out-expo);
 }
 
 .glass-card:hover {
-  background: var(--surface-hover);
-  border-color: var(--glass-border-hover);
-  box-shadow: var(--shadow-glow);
+  background: linear-gradient(
+    135deg,
+    rgba(28, 28, 40, 0.95) 0%,
+    rgba(18, 18, 26, 0.9) 100%
+  );
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 30px 0 rgba(168, 85, 247, 0.06),
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(168, 85, 247, 0.2),
+    0 0 60px rgba(34, 211, 238, 0.1);
+}
+
+/* Glowing gradient border on hover */
+.glass-card:hover::before {
+  background: linear-gradient(
+    135deg,
+    rgba(168, 85, 247, 0.6) 0%,
+    rgba(34, 211, 238, 0.5) 50%,
+    rgba(168, 85, 247, 0.4) 100%
+  );
+  filter: blur(0.5px);
+}
+
+/* Inner reflection/highlight effect */
+.glass-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+  transition: opacity var(--duration-normal) var(--ease-out-expo);
+}
+
+.glass-card:hover::after {
+  opacity: 1;
+}
+
+/* Fallback for browsers that don't support backdrop-filter */
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-card {
+    background: rgba(18, 18, 26, 0.98);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+  }
+
+  .glass-card:hover {
+    background: rgba(28, 28, 40, 0.98);
+    border-color: rgba(168, 85, 247, 0.5);
+  }
+
+  /* Hide the gradient border pseudo-element in fallback mode */
+  .glass-card::before {
+    display: none;
+  }
+
+  .glass,
+  .glass-light {
+    background: rgba(10, 10, 15, 0.98);
+  }
 }
 
 /* -----------------------------------------------------------------------------
@@ -624,23 +722,8 @@ p {
   transition: all var(--duration-normal) var(--ease-out-expo);
 }
 
-.feature-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    transparent 0%,
-    var(--glow-primary-subtle) 50%,
-    transparent 100%
-  );
-  opacity: 0;
-  transition: opacity var(--duration-slow) ease-out;
-}
-
-.feature-card:hover::before {
-  opacity: 0.1;
-}
+/* Note: feature-card no longer uses ::before to avoid conflict with glass-card gradient border.
+   The hover overlay effect is handled by the component's inner div. */
 
 /* Staggered fade-in animation */
 @keyframes feature-fade-in {
