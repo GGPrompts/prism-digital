@@ -156,22 +156,25 @@ export function Process() {
                   index % 2 === 0 ? "flex-row" : "flex-row-reverse"
                 }`}
               >
-                {/* Step Card - Clean, readable design */}
+                {/* Step Card - Glass-morphism design with high visibility */}
                 <div className="group relative flex-1">
-                  <div className="relative rounded-2xl border border-purple-500/20 bg-black/60 p-8 transition-all duration-300 hover:border-purple-500/40 hover:bg-black/70">
+                  {/* Outer glow effect */}
+                  <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-purple-500/30 via-violet-500/20 to-fuchsia-500/30 opacity-60 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
+
+                  <div className="relative rounded-2xl border border-purple-400/40 bg-gray-900/90 p-8 shadow-xl shadow-purple-500/10 backdrop-blur-sm transition-all duration-300 hover:border-purple-400/60 hover:shadow-purple-500/20">
                     {/* Subtle gradient accent on hover */}
                     <div
-                      className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${step.color} opacity-0 transition-opacity duration-300 group-hover:opacity-5`}
+                      className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${step.color} opacity-5 transition-opacity duration-300 group-hover:opacity-10`}
                     />
 
                     {/* Content */}
                     <div className="relative z-10">
                       {/* Step number with icon */}
                       <div className="mb-6 flex items-center gap-4">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-500/10">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-purple-400/40 bg-purple-500/20">
                           <span className="text-3xl">{step.icon}</span>
                         </div>
-                        <span className="font-mono text-5xl font-bold text-purple-500/30">
+                        <span className="font-mono text-5xl font-bold text-purple-400/50">
                           {step.number}
                         </span>
                       </div>
@@ -182,7 +185,7 @@ export function Process() {
                       </h3>
 
                       {/* Description */}
-                      <p className="text-base leading-relaxed text-gray-300">
+                      <p className="text-base leading-relaxed text-gray-200">
                         {step.description}
                       </p>
                     </div>
