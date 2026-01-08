@@ -9,6 +9,12 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// Check for reduced motion preference
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 const processSteps = [
   {
     number: "01",
@@ -47,59 +53,139 @@ const processSteps = [
 export function Process() {
   const sectionRef = useRef<HTMLElement>(null);
   const progressLineRef = useRef<HTMLDivElement>(null);
+  const progressGlowRef = useRef<HTMLDivElement>(null);
   const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const indicatorsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const headerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!sectionRef.current) return;
 
-    const ctx = gsap.context(() => {
-      // Animate progress line
-      gsap.from(progressLineRef.current, {
-        scaleY: 0,
-        transformOrigin: "top center",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top center",
-          end: "bottom center",
-          scrub: 1,
-        },
-      });
+    const reducedMotion = prefersReducedMotion();
 
-      // Animate each step card with visible default state
+    const ctx = gsap.context(() => {
+      // Header entrance animation
+      if (headerRef.current && !reducedMotion) {
+        gsap.from(headerRef.current, {
+          y: 60,
+          opacity: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: headerRef.current,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      }
+
+      // Animate progress line fill with clipPath for smooth reveal
+      if (progressLineRef.current && progressGlowRef.current) {
+        const progressElements = [progressLineRef.current, progressGlowRef.current];
+
+        gsap.fromTo(
+          progressElements,
+          { clipPath: "inset(0% 0% 100% 0%)" },
+          {
+            clipPath: "inset(0% 0% 0% 0%)",
+            ease: "none",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 40%",
+              end: "bottom 60%",
+              scrub: 0.5,
+            },
+          }
+        );
+      }
+
+      // Animate each step card with staggered entrance
       stepsRef.current.forEach((step, index) => {
         if (!step) return;
 
-        // Set initial visible state
-        gsap.set(step, { opacity: 1, x: 0 });
+        if (reducedMotion) {
+          // For reduced motion: simple fade only
+          gsap.from(step, {
+            opacity: 0,
+            duration: 0.5,
+            scrollTrigger: {
+              trigger: step,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+          });
+          return;
+        }
 
-        // Card entrance animation on scroll
+        // Staggered fade-in + slide animation
         gsap.fromTo(
           step,
           {
-            opacity: 0.3,
-            x: index % 2 === 0 ? -50 : 50,
+            opacity: 0,
+            x: index % 2 === 0 ? -80 : 80,
+            y: 40,
+            scale: 0.95,
           },
           {
             opacity: 1,
             x: 0,
+            y: 0,
+            scale: 1,
+            duration: 1,
+            delay: index * 0.1,
+            ease: "power3.out",
             scrollTrigger: {
               trigger: step,
-              start: "top 90%",
-              end: "top 60%",
-              scrub: 1,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
             },
           }
         );
 
-        // Floating animation
+        // Subtle parallax effect - cards move at different speeds
         gsap.to(step, {
-          y: -8,
-          duration: 2.5 + index * 0.3,
+          y: -20 - index * 5,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.5,
+          },
+        });
+      });
+
+      // Animate step indicators (center nodes) with floating/bobbing
+      indicatorsRef.current.forEach((indicator, index) => {
+        if (!indicator || reducedMotion) return;
+
+        // Floating animation for step indicators
+        gsap.to(indicator, {
+          y: -6,
+          duration: 2 + index * 0.2,
           repeat: -1,
           yoyo: true,
           ease: "sine.inOut",
-          delay: index * 0.2,
+          delay: index * 0.3,
         });
+
+        // Scale pulse on scroll into view
+        gsap.fromTo(
+          indicator,
+          { scale: 0.5, opacity: 0 },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 0.6,
+            delay: index * 0.15,
+            ease: "back.out(1.7)",
+            scrollTrigger: {
+              trigger: indicator,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
       });
     }, sectionRef);
 
@@ -117,7 +203,7 @@ export function Process() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-20">
         {/* Section Header */}
-        <div className="mb-24 text-center">
+        <div ref={headerRef} className="mb-24 text-center">
           <div className="mb-6 inline-block">
             <span className="text-sm font-mono uppercase tracking-wider text-accent-cyan">
               How We Work
@@ -133,15 +219,17 @@ export function Process() {
 
         {/* Progress indicator */}
         <div className="relative mx-auto max-w-5xl">
-          {/* Vertical progress line */}
+          {/* Vertical progress line - background track */}
+          <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-purple-500/10" />
+
+          {/* Vertical progress line - animated fill with glow */}
           <div
-            ref={progressLineRef}
+            ref={progressGlowRef}
             className="absolute left-1/2 top-0 h-full w-1 -translate-x-1/2 bg-gradient-to-b from-cyan-400 via-purple-500 to-pink-500 opacity-30 blur-sm"
-            style={{ transformOrigin: "top center" }}
           />
           <div
+            ref={progressLineRef}
             className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-cyan-400 via-purple-500 to-pink-500"
-            style={{ transformOrigin: "top center" }}
           />
 
           {/* Process Steps */}
@@ -189,10 +277,15 @@ export function Process() {
                   </div>
                 </div>
 
-                {/* Center Node */}
-                <div className="relative z-20 flex h-8 w-8 flex-shrink-0 items-center justify-center">
+                {/* Center Node - Step Indicator */}
+                <div
+                  ref={(el) => {
+                    indicatorsRef.current[index] = el;
+                  }}
+                  className="relative z-20 flex h-8 w-8 flex-shrink-0 items-center justify-center"
+                >
                   <div className="absolute h-8 w-8 animate-ping rounded-full bg-purple-500 opacity-20" />
-                  <div className={`h-6 w-6 rounded-full bg-gradient-to-br ${step.accentColor} shadow-lg shadow-purple-500/50`} />
+                  <div className={`h-6 w-6 rounded-full bg-gradient-to-br ${step.accentColor} shadow-lg shadow-purple-500/50 transition-transform duration-300 hover:scale-125`} />
                   <div className="absolute h-12 w-12 rounded-full border border-purple-500/30" />
                 </div>
 
