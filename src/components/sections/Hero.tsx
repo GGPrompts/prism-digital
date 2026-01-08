@@ -69,7 +69,7 @@ export function Hero() {
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top top',
-            end: '20% top',
+            end: '+=140', // fade within the first ~140px of scroll
             scrub: 1,
           },
         })

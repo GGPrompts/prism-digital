@@ -70,6 +70,7 @@ export function Process() {
   const sectionRef = useRef<HTMLElement>(null);
   const progressLineRef = useRef<HTMLDivElement>(null);
   const progressGlowRef = useRef<HTMLDivElement>(null);
+  const progressWrapperRef = useRef<HTMLDivElement>(null);
   const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
   const indicatorsRef = useRef<(HTMLDivElement | null)[]>([]);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -102,6 +103,7 @@ export function Process() {
       // Animate progress line fill with clipPath for smooth reveal
       if (progressLineRef.current && progressGlowRef.current) {
         const progressElements = [progressLineRef.current, progressGlowRef.current];
+        const progressTrigger = progressWrapperRef.current ?? sectionRef.current;
 
         gsap.fromTo(
           progressElements,
@@ -110,10 +112,10 @@ export function Process() {
             clipPath: "inset(0% 0% 0% 0%)",
             ease: "none",
             scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 40%",
-              end: "bottom 60%",
-              scrub: 0.5,
+              trigger: progressTrigger,
+              start: "top 70%",
+              end: "bottom 30%",
+              scrub: 0.6,
             },
           }
         );
@@ -239,7 +241,10 @@ export function Process() {
         </div>
 
         {/* Progress indicator */}
-        <div className="relative mx-auto max-w-5xl">
+        <div
+          ref={progressWrapperRef}
+          className="relative mx-auto max-w-5xl pt-10 md:pt-16"
+        >
           {/* Vertical progress line - background track */}
           <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-purple-500/10" />
 
