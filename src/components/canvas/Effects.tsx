@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useThree } from "@react-three/fiber";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
@@ -9,6 +11,45 @@ interface EffectsProps {
 }
 
 export function Effects({ device }: EffectsProps) {
+  const gl = useThree((state) => state.gl);
+  const [isComposerSafe, setIsComposerSafe] = useState(false);
+
+  useEffect(() => {
+    let canceled = false;
+    let tries = 0;
+
+    const check = () => {
+      if (canceled) return;
+      tries += 1;
+
+      try {
+        const context = gl?.getContext?.();
+        if (!context || context.isContextLost?.()) {
+          setIsComposerSafe(false);
+          return;
+        }
+
+        const attrs = context.getContextAttributes?.();
+        if (attrs) {
+          setIsComposerSafe(true);
+          return;
+        }
+      } catch {
+        setIsComposerSafe(false);
+        return;
+      }
+
+      if (tries < 10) requestAnimationFrame(check);
+    };
+
+    check();
+    return () => {
+      canceled = true;
+    };
+  }, [gl]);
+
+  if (!isComposerSafe) return null;
+
   // Adaptive effect quality based on GPU tier
   const bloomIntensity = device?.gpu === "high" ? 1.2 : 0.8;
   const bloomRadius = device?.gpu === "high" ? 0.8 : 0.5;

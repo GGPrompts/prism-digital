@@ -2,6 +2,26 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+function mulberry32(seed: number) {
+  return function next() {
+    let t = (seed += 0x6d2b79f5)
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+const PARTICLES = Array.from({ length: 30 }, (_, index) => {
+  const rand = mulberry32(index + 1)
+  const width = 1 + rand() * 4
+  const height = 1 + rand() * 4
+  const left = rand() * 100
+  const top = rand() * 100
+  const duration = 10 + rand() * 20
+  const delay = rand() * 20
+  return { width, height, left, top, duration, delay }
+})
+
 export function CTA() {
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
@@ -61,17 +81,17 @@ export function CTA() {
 
       {/* Floating particles effect */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {[...Array(30)].map((_, i) => (
+        {PARTICLES.map((p, i) => (
           <div
             key={i}
             className="absolute rounded-full bg-primary opacity-10"
             style={{
-              width: Math.random() * 4 + 1 + 'px',
-              height: Math.random() * 4 + 1 + 'px',
-              left: Math.random() * 100 + '%',
-              top: Math.random() * 100 + '%',
-              animation: `float ${Math.random() * 20 + 10}s linear infinite`,
-              animationDelay: `-${Math.random() * 20}s`
+              width: p.width + 'px',
+              height: p.height + 'px',
+              left: p.left + '%',
+              top: p.top + '%',
+              animation: `float ${p.duration}s linear infinite`,
+              animationDelay: `-${p.delay}s`
             }}
           />
         ))}
