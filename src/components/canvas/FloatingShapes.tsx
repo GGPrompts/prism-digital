@@ -31,6 +31,10 @@ function FloatingShape({ config, mouse, scrollOffset, index }: FloatingShapeProp
   useFrame((state, delta) => {
     if (!meshRef.current) return;
 
+    // Some browsers can report tiny non-zero scroll offsets on initial load.
+    // Treat very small values as 0 so shapes don't "disappear" immediately.
+    const effectiveScroll = scrollOffset < 0.02 ? 0 : scrollOffset;
+
     // Smooth rotation
     meshRef.current.rotation.x += delta * config.rotationSpeed * 0.3;
     meshRef.current.rotation.y += delta * config.rotationSpeed * 0.5;
@@ -53,7 +57,7 @@ function FloatingShape({ config, mouse, scrollOffset, index }: FloatingShapeProp
     );
 
     // Scroll-based z movement - shapes recede as user scrolls
-    const scrollZ = initialPos.z - scrollOffset * 3;
+    const scrollZ = initialPos.z - effectiveScroll * 1.25;
     meshRef.current.position.z = THREE.MathUtils.lerp(
       meshRef.current.position.z,
       scrollZ,
@@ -62,8 +66,8 @@ function FloatingShape({ config, mouse, scrollOffset, index }: FloatingShapeProp
 
     // Fade out shapes as user scrolls
     const material = meshRef.current.material as THREE.MeshPhysicalMaterial;
-    material.opacity = THREE.MathUtils.lerp(0.6, 0.1, scrollOffset);
-    material.emissiveIntensity = THREE.MathUtils.lerp(0.8, 0.2, scrollOffset);
+    material.opacity = THREE.MathUtils.lerp(0.65, 0.35, effectiveScroll);
+    material.emissiveIntensity = THREE.MathUtils.lerp(0.9, 0.45, effectiveScroll);
   });
 
   const geometry = useMemo(() => {
@@ -95,6 +99,7 @@ function FloatingShape({ config, mouse, scrollOffset, index }: FloatingShapeProp
           emissiveIntensity={0.8}
           transparent
           opacity={0.6}
+          depthWrite={false}
           roughness={0.2}
           metalness={0.8}
           clearcoat={1}
