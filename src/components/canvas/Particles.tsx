@@ -1,25 +1,30 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
 interface ParticlesProps {
   count?: number;
   mouse?: THREE.Vector2;
   scrollOffset?: number;
+  device?: DeviceCapabilities;
 }
 
 export function Particles({
   count = 3000,
   mouse = new THREE.Vector2(),
   scrollOffset = 0,
+  device,
 }: ParticlesProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null!);
 
   // Pre-allocate reusable objects (avoid GC in render loop)
   const tempObject = useMemo(() => new THREE.Object3D(), []);
   const tempVec = useMemo(() => new THREE.Vector3(), []);
+  const tempVec2 = useMemo(() => new THREE.Vector3(), []);
+  const tempVec3 = useMemo(() => new THREE.Vector3(), []);
   const tempColor = useMemo(() => new THREE.Color(), []);
 
   // Initialize particle data
@@ -66,8 +71,10 @@ export function Particles({
     if (!meshRef.current) return;
 
     const time = state.clock.getElapsedTime();
-    const mouseInfluence = 2.5; // How strongly mouse affects particles
-    const scrollInfluence = 2.0;
+
+    // Reduce interaction strength on mobile for better performance
+    const mouseInfluence = device?.isMobile ? 1.5 : 2.5;
+    const scrollInfluence = device?.isMobile ? 1.2 : 2.0;
 
     for (let i = 0; i < count; i++) {
       const idx = i * 7;
@@ -98,17 +105,17 @@ export function Particles({
       y += vy + flowY;
       z += vz + flowZ;
 
-      // Mouse interaction - subtle repulsion
+      // Mouse interaction - subtle repulsion (using pre-allocated vectors)
       tempVec.set(x, y, z);
-      const mousePos3D = new THREE.Vector3(mouse.x * 5, mouse.y * 5, 2);
-      const distanceToMouse = tempVec.distanceTo(mousePos3D);
+      tempVec2.set(mouse.x * 5, mouse.y * 5, 2);
+      const distanceToMouse = tempVec.distanceTo(tempVec2);
 
       if (distanceToMouse < 3) {
         const repulsion = (3 - distanceToMouse) / 3;
-        const direction = tempVec.clone().sub(mousePos3D).normalize();
-        x += direction.x * repulsion * mouseInfluence * 0.05;
-        y += direction.y * repulsion * mouseInfluence * 0.05;
-        z += direction.z * repulsion * mouseInfluence * 0.03;
+        tempVec3.copy(tempVec).sub(tempVec2).normalize();
+        x += tempVec3.x * repulsion * mouseInfluence * 0.05;
+        y += tempVec3.y * repulsion * mouseInfluence * 0.05;
+        z += tempVec3.z * repulsion * mouseInfluence * 0.03;
       }
 
       // Scroll reactivity - expand/contract particle field
@@ -155,9 +162,26 @@ export function Particles({
     }
   });
 
+  // Resource cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (meshRef.current) {
+        meshRef.current.geometry.dispose();
+        if (Array.isArray(meshRef.current.material)) {
+          meshRef.current.material.forEach((mat) => mat.dispose());
+        } else {
+          meshRef.current.material.dispose();
+        }
+      }
+    };
+  }, []);
+
+  // Use lower geometry detail on mobile for better performance
+  const geometrySegments = device?.isMobile ? 6 : 8;
+
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <sphereGeometry args={[1, 8, 8]} />
+      <sphereGeometry args={[1, geometrySegments, geometrySegments]} />
       <meshBasicMaterial toneMapped={false} />
     </instancedMesh>
   );

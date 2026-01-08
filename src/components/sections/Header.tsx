@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 /**
  * Header Component - Glass Morphism Navigation
@@ -129,7 +130,10 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-4">
+            {/* Theme toggle */}
+            <ThemeToggle />
+
             <ul className="flex items-center gap-1">
               {navLinks.map((link, index) => (
                 <li key={link.href}>
@@ -277,7 +281,10 @@ export function Header() {
               Menu
             </span>
           </span>
-          <button
+          <div className="flex items-center gap-3">
+            {/* Theme toggle in mobile menu */}
+            <ThemeToggle />
+            <button
             onClick={() => setMobileMenuOpen(false)}
             className="
               w-10 h-10 rounded-lg
@@ -304,6 +311,7 @@ export function Header() {
               />
             </svg>
           </button>
+          </div>
         </div>
 
         {/* Mobile nav links */}

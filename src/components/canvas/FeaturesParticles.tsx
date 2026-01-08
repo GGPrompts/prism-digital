@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useScroll } from "@react-three/drei";
 import * as THREE from "three";
@@ -139,6 +139,20 @@ export function FeaturesParticles() {
     // Rotate entire system during features
     meshRef.current.rotation.y = time * 0.1 + featuresProgress * Math.PI;
   });
+
+  // Resource cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (meshRef.current) {
+        meshRef.current.geometry.dispose();
+        if (Array.isArray(meshRef.current.material)) {
+          meshRef.current.material.forEach((mat) => mat.dispose());
+        } else {
+          meshRef.current.material.dispose();
+        }
+      }
+    };
+  }, []);
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>

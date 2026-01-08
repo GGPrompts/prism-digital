@@ -120,6 +120,84 @@
 }
 
 /* -----------------------------------------------------------------------------
+   Light Mode Color Overrides - Subtle and refined for 3D contrast
+   ----------------------------------------------------------------------------- */
+.light {
+  /* Background layers - Light but not harsh white */
+  --background: #fafafa;
+  --background-secondary: #f5f5f5;
+  --background-tertiary: #e5e5e5;
+
+  /* Foreground / Text */
+  --foreground: #18181b;
+  --foreground-muted: #52525b;
+  --foreground-subtle: #71717a;
+
+  /* Primary Purple Palette - Slightly darker for light backgrounds */
+  --primary: #7c3aed;
+  --primary-hover: #6d28d9;
+  --primary-muted: #8b5cf6;
+  --primary-subtle: #a78bfa;
+  --primary-dark: #5b21b6;
+  --primary-foreground: #ffffff;
+
+  /* Accent colors adjusted for light mode */
+  --accent-cyan: #0891b2;
+  --accent-pink: #db2777;
+  --accent-blue: #2563eb;
+
+  /* Glow effects - Toned down for light mode */
+  --glow-primary: rgba(124, 58, 237, 0.3);
+  --glow-primary-strong: rgba(124, 58, 237, 0.5);
+  --glow-primary-subtle: rgba(124, 58, 237, 0.15);
+  --glow-cyan: rgba(8, 145, 178, 0.3);
+  --glow-pink: rgba(219, 39, 119, 0.3);
+
+  /* Glass/blur effect tokens */
+  --glass-background: rgba(255, 255, 255, 0.8);
+  --glass-background-light: rgba(245, 245, 245, 0.7);
+  --glass-border: rgba(124, 58, 237, 0.2);
+  --glass-border-hover: rgba(124, 58, 237, 0.4);
+
+  /* Surface colors for cards/overlays */
+  --surface: rgba(245, 245, 245, 0.9);
+  --surface-hover: rgba(229, 229, 229, 0.9);
+  --surface-active: rgba(212, 212, 216, 0.9);
+
+  /* Borders */
+  --border: rgba(113, 113, 122, 0.3);
+  --border-hover: rgba(124, 58, 237, 0.4);
+  --input: rgba(113, 113, 122, 0.4);
+  --ring: rgba(124, 58, 237, 0.5);
+
+  /* shadcn/ui compatibility */
+  --card: #ffffff;
+  --card-foreground: #18181b;
+  --popover: #ffffff;
+  --popover-foreground: #18181b;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #18181b;
+  --muted: #f5f5f5;
+  --muted-foreground: #52525b;
+  --accent: #f5f5f5;
+  --accent-foreground: #18181b;
+  --destructive: #dc2626;
+
+  /* Semantic colors - Adjusted for light backgrounds */
+  --success: #16a34a;
+  --warning: #ea580c;
+  --error: #dc2626;
+  --info: #2563eb;
+
+  /* Shadows - More subtle in light mode */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 0 20px var(--glow-primary-subtle);
+  --shadow-glow-strong: 0 0 40px var(--glow-primary);
+}
+
+/* -----------------------------------------------------------------------------
    Tailwind Theme Configuration
    ----------------------------------------------------------------------------- */
 @theme inline {
@@ -226,6 +304,28 @@
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
+  }
+
+  /* Smooth theme transitions */
+  html {
+    transition: background-color 400ms ease-out, color 400ms ease-out;
+  }
+
+  body,
+  body * {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 400ms;
+    transition-timing-function: ease-out;
+  }
+
+  /* Disable transitions for interactive elements to keep them snappy */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    transition-property: background-color, border-color, color, fill, stroke, transform, box-shadow, opacity;
+    transition-duration: 200ms;
   }
 }
 
@@ -712,5 +812,151 @@ p {
 
 .hero-scroll {
   animation: fadeInUp 0.8s cubic-bezier(0.19, 1, 0.22, 1) 0.7s both;
+}
+
+/* -----------------------------------------------------------------------------
+   Loading Screen Animations
+   ----------------------------------------------------------------------------- */
+
+/* Prism shape for loader */
+.prism-shape {
+  position: relative;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-muted) 100%);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  box-shadow: 0 0 20px var(--glow-primary);
+}
+
+/* Slow spin animation */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+/* Slow pulse animation */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+/* Shadow glow for center dot */
+.shadow-glow-primary {
+  box-shadow: 0 0 20px var(--glow-primary), 0 0 40px var(--glow-primary-subtle);
+}
+
+/* -----------------------------------------------------------------------------
+   Mobile Touch & Responsive Optimizations
+   ----------------------------------------------------------------------------- */
+
+/* Prevent text selection on interactive elements for better touch experience */
+button,
+a,
+[role="button"],
+[role="tab"] {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* Allow text selection in content areas */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+blockquote {
+  user-select: text;
+}
+
+/* Improve touch target sizes on mobile */
+@media (max-width: 768px) {
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px; /* iOS recommended minimum touch target size */
+  }
+
+  /* Larger tap targets for navigation */
+  nav a {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Disable hover effects on touch devices */
+  @media (hover: none) {
+    *:hover {
+      /* Prevent hover states from sticking on touch devices */
+    }
+  }
+}
+
+/* Optimize scrolling performance on mobile */
+.scroll-section {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Improve mobile viewport handling */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific */
+  body {
+    /* Prevent bounce scrolling */
+    overscroll-behavior-y: none;
+  }
+
+  /* Fix iOS viewport height issue */
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: rgba(168, 85, 247, 0.6);
+    --glass-border: rgba(168, 85, 247, 0.5);
+  }
+}
+
+/* Better focus indicators for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
 }
 

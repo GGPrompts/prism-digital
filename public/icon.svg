@@ -1,0 +1,26 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Purple gradient background -->
+  <defs>
+    <linearGradient id="prismGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" fill="#0a0a0a" rx="64"/>
+
+  <!-- Prism shape - geometric 3D representation -->
+  <g transform="translate(256, 256)">
+    <!-- Front face -->
+    <path d="M 0,-120 L 100,40 L -100,40 Z" fill="url(#prismGradient)" opacity="1"/>
+
+    <!-- Side faces with depth -->
+    <path d="M 100,40 L 120,60 L 20,60 L 0,40 Z" fill="#7c3aed" opacity="0.7"/>
+    <path d="M -100,40 L 0,40 L 20,60 L -80,60 Z" fill="#6d28d9" opacity="0.5"/>
+
+    <!-- Top edge highlight -->
+    <path d="M 0,-120 L 20,-100 L -80,60 L -100,40 Z" fill="#9333ea" opacity="0.6"/>
+    <path d="M 0,-120 L 100,40 L 120,60 L 20,-100 Z" fill="#a855f7" opacity="0.8"/>
+  </g>
+</svg>

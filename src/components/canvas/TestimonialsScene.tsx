@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Sphere, MeshDistortMaterial } from '@react-three/drei';
 import * as THREE from 'three';
@@ -14,6 +14,22 @@ export default function TestimonialsScene({ scrollProgress = 0 }: { scrollProgre
   const sphere1Ref = useRef<THREE.Mesh>(null);
   const sphere2Ref = useRef<THREE.Mesh>(null);
   const sphere3Ref = useRef<THREE.Mesh>(null);
+
+  // Resource cleanup on unmount
+  useEffect(() => {
+    return () => {
+      [sphere1Ref, sphere2Ref, sphere3Ref].forEach((ref) => {
+        if (ref.current) {
+          ref.current.geometry.dispose();
+          if (Array.isArray(ref.current.material)) {
+            ref.current.material.forEach((mat) => mat.dispose());
+          } else {
+            (ref.current.material as THREE.Material).dispose();
+          }
+        }
+      });
+    };
+  }, []);
 
   useFrame((state) => {
     const time = state.clock.elapsedTime;

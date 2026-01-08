@@ -1,0 +1,156 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Register ScrollTrigger plugin
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+export interface GSAPScrollState {
+  scrollY: number;
+  scrollProgress: number; // 0-1 normalized progress
+  direction: "up" | "down";
+  velocity: number;
+  section: string;
+}
+
+/**
+ * Enhanced scroll hook using GSAP ScrollTrigger
+ * Provides smooth scroll state for 3D scene integration
+ */
+export function useGSAPScroll() {
+  const [scrollState, setScrollState] = useState<GSAPScrollState>({
+    scrollY: 0,
+    scrollProgress: 0,
+    direction: "down",
+    velocity: 0,
+    section: "hero",
+  });
+
+  const velocityRef = useRef(0);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const updateScrollState = () => {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const maxScroll = documentHeight - windowHeight;
+      const scrollProgress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
+
+      // Calculate velocity
+      const delta = scrollY - lastScrollY.current;
+      velocityRef.current = delta;
+      lastScrollY.current = scrollY;
+
+      // Determine current section
+      let section = "hero";
+      const sections = ["hero", "features", "process", "testimonials"];
+      const threshold = windowHeight * 0.5;
+
+      sections.forEach((sec) => {
+        const element = document.getElementById(sec);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top < threshold && rect.bottom > threshold) {
+            section = sec;
+          }
+        }
+      });
+
+      setScrollState({
+        scrollY,
+        scrollProgress,
+        direction: delta > 0 ? "down" : "up",
+        velocity: Math.abs(delta),
+        section,
+      });
+    };
+
+    // Create a ScrollTrigger that updates on every scroll event
+    ScrollTrigger.create({
+      trigger: "body",
+      start: "top top",
+      end: "bottom bottom",
+      onUpdate: updateScrollState,
+    });
+
+    // Also update on scroll for immediate feedback
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    window.addEventListener("resize", updateScrollState, { passive: true });
+
+    // Initial call
+    updateScrollState();
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      window.removeEventListener("scroll", updateScrollState);
+      window.removeEventListener("resize", updateScrollState);
+    };
+  }, []);
+
+  return scrollState;
+}
+
+/**
+ * Hook to create section-based scroll snapping
+ */
+export function useScrollSnap(enabled: boolean = true) {
+  useEffect(() => {
+    if (typeof window === "undefined" || !enabled) return;
+
+    ScrollTrigger.create({
+      snap: {
+        snapTo: "labelsDirectional",
+        duration: { min: 0.2, max: 0.8 },
+        delay: 0.1,
+        ease: "power2.inOut",
+      },
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, [enabled]);
+}
+
+/**
+ * Hook for parallax effects on elements
+ */
+export function useParallax(
+  ref: React.RefObject<HTMLElement>,
+  options: {
+    speed?: number;
+    start?: string;
+    end?: string;
+  } = {}
+) {
+  const { speed = 0.5, start = "top bottom", end = "bottom top" } = options;
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !ref.current) return;
+
+    const element = ref.current;
+
+    const tween = gsap.to(element, {
+      y: () => -window.innerHeight * speed,
+      ease: "none",
+      scrollTrigger: {
+        trigger: element,
+        start,
+        end,
+        scrub: 1,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    return () => {
+      tween.kill();
+    };
+  }, [ref, speed, start, end]);
+}

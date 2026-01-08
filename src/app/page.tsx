@@ -10,7 +10,7 @@ export default function Home() {
       <Hero />
 
       {/* Features Section - placeholder */}
-      <section className="scroll-section">
+      <section id="features" className="scroll-section">
         <div className="mx-auto max-w-6xl">
           <h2 className="mb-12 text-center">What We Do</h2>
 
@@ -43,10 +43,14 @@ export default function Home() {
       </section>
 
       {/* Process Section - How We Work */}
-      <Process />
+      <div id="process">
+        <Process />
+      </div>
 
       {/* Testimonials Section - Social Proof */}
-      <Testimonials />
+      <div id="testimonials">
+        <Testimonials />
+      </div>
 
       {/* Footer */}
       <Footer />

@@ -1,0 +1,45 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+
+  <!-- Gradient overlay -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.1" />
+    </linearGradient>
+    <linearGradient id="prismGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+
+  <!-- Glow effect -->
+  <circle cx="600" cy="315" r="400" fill="url(#glow)"/>
+
+  <!-- 3D Prism logo -->
+  <g transform="translate(300, 315)">
+    <path d="M 0,-150 L 130,50 L -130,50 Z" fill="url(#prismGradient)" opacity="1"/>
+    <path d="M 130,50 L 150,70 L 20,70 L 0,50 Z" fill="#7c3aed" opacity="0.7"/>
+    <path d="M -130,50 L 0,50 L 20,70 L -110,70 Z" fill="#6d28d9" opacity="0.5"/>
+    <path d="M 0,-150 L 20,-130 L -110,70 L -130,50 Z" fill="#9333ea" opacity="0.6"/>
+    <path d="M 0,-150 L 130,50 L 150,70 L 20,-130 Z" fill="#a855f7" opacity="0.8"/>
+  </g>
+
+  <!-- Text content -->
+  <text x="520" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#ffffff">
+    Prism Digital
+  </text>
+  <text x="520" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="400" fill="#a855f7">
+    Building the Future of Web3D
+  </text>
+  <text x="520" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="300" fill="#9ca3af">
+    3D Visualization • Interactive Experiences • WebGL Development
+  </text>
+</svg>
