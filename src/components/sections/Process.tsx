@@ -65,30 +65,40 @@ export function Process() {
         },
       });
 
-      // Animate each step card
+      // Animate each step card with visible default state
       stepsRef.current.forEach((step, index) => {
         if (!step) return;
 
-        // Card entrance
-        gsap.from(step, {
-          opacity: 0,
-          x: index % 2 === 0 ? -100 : 100,
-          rotateY: index % 2 === 0 ? -15 : 15,
-          scrollTrigger: {
-            trigger: step,
-            start: "top 80%",
-            end: "top 30%",
-            scrub: 1,
+        // Set initial visible state
+        gsap.set(step, { opacity: 1, x: 0 });
+
+        // Card entrance animation on scroll
+        gsap.fromTo(
+          step,
+          {
+            opacity: 0.3,
+            x: index % 2 === 0 ? -50 : 50,
           },
-        });
+          {
+            opacity: 1,
+            x: 0,
+            scrollTrigger: {
+              trigger: step,
+              start: "top 90%",
+              end: "top 60%",
+              scrub: 1,
+            },
+          }
+        );
 
         // Floating animation
         gsap.to(step, {
-          y: -10,
-          duration: 2 + index * 0.3,
+          y: -8,
+          duration: 2.5 + index * 0.3,
           repeat: -1,
           yoyo: true,
           ease: "sine.inOut",
+          delay: index * 0.2,
         });
       });
     }, sectionRef);
