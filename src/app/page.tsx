@@ -1,5 +1,7 @@
 import { Hero } from '@/components/sections/Hero'
 import { Process } from '@/components/sections/Process'
+import Testimonials from '@/components/sections/Testimonials'
+import { Footer } from '@/components/sections/Footer'
 
 export default function Home() {
   return (
@@ -42,6 +44,12 @@ export default function Home() {
 
       {/* Process Section - How We Work */}
       <Process />
+
+      {/* Testimonials Section - Social Proof */}
+      <Testimonials />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
