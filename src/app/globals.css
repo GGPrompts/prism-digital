@@ -514,3 +514,203 @@ p {
 .bg-gradient-glow {
   background: radial-gradient(ellipse at 50% 0%, var(--glow-primary-subtle) 0%, transparent 50%);
 }
+
+/* -----------------------------------------------------------------------------
+   Feature Cards - Enhanced animations
+   ----------------------------------------------------------------------------- */
+.feature-card {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-out-expo);
+}
+
+.feature-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    var(--glow-primary-subtle) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity var(--duration-slow) ease-out;
+}
+
+.feature-card:hover::before {
+  opacity: 0.1;
+}
+
+/* Staggered fade-in animation */
+@keyframes feature-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Header Component Styles
+   ----------------------------------------------------------------------------- */
+.container-custom {
+  width: 100%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ease-out-expo {
+  transition-timing-function: var(--ease-out-expo);
+}
+
+.shadow-glow-primary {
+  box-shadow: 0 10px 40px var(--glow-primary-subtle);
+}
+
+/* -----------------------------------------------------------------------------
+   Testimonials Section - Editorial Magazine Style
+   ----------------------------------------------------------------------------- */
+
+/* Testimonial quotemark animation */
+.testimonial-quotemark {
+  opacity: 0;
+  transform: translate(-50%, -20px) scale(0.8);
+  transition: all 1.2s var(--ease-out-expo);
+}
+
+.testimonial-quotemark.testimonial-visible {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+/* Metrics animation */
+.testimonial-metric {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s var(--ease-out-expo);
+}
+
+.testimonial-metric.testimonial-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.testimonial-metric.testimonial-visible .testimonial-metric-line {
+  opacity: 1;
+  animation: testimonial-line-grow 0.8s ease-out 0.3s both;
+}
+
+@keyframes testimonial-line-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Testimonial Card */
+.testimonial-card {
+  opacity: 0;
+  transform: translateY(60px) rotate(0deg) scale(0.9);
+  transition: all 0.9s var(--ease-out-expo);
+}
+
+.testimonial-card.testimonial-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.testimonial-card:hover {
+  transform: translateY(-8px) scale(1.02) !important;
+}
+
+.testimonial-card-inner {
+  position: relative;
+  transition: all 0.5s var(--ease-out-expo);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+}
+
+.testimonial-card:hover .testimonial-card-inner {
+  border-color: rgba(168, 85, 247, 0.4);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(168, 85, 247, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+/* Avatar */
+.testimonial-avatar {
+  transition: all 0.3s ease;
+}
+
+.testimonial-card:hover .testimonial-avatar {
+  transform: scale(1.1) rotate(-5deg);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+}
+
+/* Trust badges */
+.testimonial-trust-badge {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s var(--ease-out-expo);
+}
+
+.testimonial-trust-badge.testimonial-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .testimonial-quotemark {
+    font-size: 12rem !important;
+    top: -10rem;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Hero Section Animations
+   ----------------------------------------------------------------------------- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-headline {
+  font-family: var(--font-bebas-neue), Impact, var(--font-display);
+  text-shadow:
+    0 0 30px rgba(168, 85, 247, 0.6),
+    0 0 60px rgba(168, 85, 247, 0.4),
+    0 4px 20px rgba(0, 0, 0, 0.9),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  animation: fadeInUp 0.8s cubic-bezier(0.19, 1, 0.22, 1) 0.1s both;
+}
+
+.hero-subtext {
+  font-family: var(--font-inter), 'Helvetica Neue', var(--font-sans);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8), 0 4px 24px rgba(0, 0, 0, 0.6);
+  animation: fadeInUp 0.8s cubic-bezier(0.19, 1, 0.22, 1) 0.3s both;
+}
+
+.hero-cta {
+  animation: fadeInUp 0.8s cubic-bezier(0.19, 1, 0.22, 1) 0.5s both;
+}
+
+.hero-scroll {
+  animation: fadeInUp 0.8s cubic-bezier(0.19, 1, 0.22, 1) 0.7s both;
+}
+

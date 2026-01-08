@@ -1,32 +1,13 @@
+import { Hero } from '@/components/sections/Hero'
+import { Process } from '@/components/sections/Process'
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="scroll-section relative">
-        <div className="bg-gradient-glow absolute inset-0" />
+      <Hero />
 
-        <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <h1 className="text-gradient mb-6">
-            Building the Future of Web3D
-          </h1>
-
-          <p className="mx-auto mb-8 max-w-2xl text-lg text-foreground-muted">
-            Prism Digital creates immersive 3D experiences that push the boundaries
-            of what&apos;s possible on the web.
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-4">
-            <button className="btn btn-primary">
-              See Our Work
-            </button>
-            <button className="btn btn-glass">
-              Learn More
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
+      {/* Features Section - placeholder */}
       <section className="scroll-section">
         <div className="mx-auto max-w-6xl">
           <h2 className="mb-12 text-center">What We Do</h2>
@@ -59,18 +40,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="scroll-section">
-        <div className="glass mx-auto max-w-2xl p-12 text-center">
-          <h2 className="glow-text mb-4">Ready to Start?</h2>
-          <p className="mb-8 text-foreground-muted">
-            Let&apos;s create something extraordinary together.
-          </p>
-          <button className="btn btn-primary glow-pulse">
-            Get in Touch
-          </button>
-        </div>
-      </section>
+      {/* Process Section - How We Work */}
+      <Process />
     </div>
   );
 }
