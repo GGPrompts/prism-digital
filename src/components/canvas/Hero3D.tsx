@@ -15,6 +15,11 @@ interface Hero3DProps {
 
 export function Hero3D({ scrollProgress: externalScrollProgress = 0, device }: Hero3DProps) {
   const { pointer } = useThree();
+  const safeScrollTarget = THREE.MathUtils.clamp(
+    Number.isFinite(externalScrollProgress) ? externalScrollProgress : 0,
+    0,
+    1
+  );
 
   // Get optimal particle count based on device
   const particleCount = getOptimalParticleCount(device);
@@ -40,7 +45,7 @@ export function Hero3D({ scrollProgress: externalScrollProgress = 0, device }: H
     mouseRef.current.lerp(targetMouseRef.current, lerpSpeed);
 
     // Use external scroll progress from GSAP (native page scroll)
-    const targetScroll = externalScrollProgress;
+    const targetScroll = safeScrollTarget;
 
     // Smooth scroll interpolation for buttery smooth transitions
     smoothScrollRef.current = THREE.MathUtils.lerp(

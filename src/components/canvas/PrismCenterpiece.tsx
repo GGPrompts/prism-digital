@@ -23,6 +23,11 @@ export function PrismCenterpiece({
 }: PrismCenterpieceProps) {
   const meshRef = useRef<THREE.Mesh>(null!);
   const groupRef = useRef<THREE.Group>(null!);
+  const safeScrollProgress = THREE.MathUtils.clamp(
+    Number.isFinite(scrollProgress) ? scrollProgress : 0,
+    0,
+    1
+  );
 
   // Load environment for reflections
   const envMap = useEnvironment({ preset: "night" });
@@ -90,11 +95,11 @@ export function PrismCenterpiece({
 
     // Subtle float based on scroll
     const floatY = Math.sin(time * 0.5) * 0.1;
-    const scrollFloat = scrollProgress * 0.5;
+    const scrollFloat = safeScrollProgress * 0.5;
     groupRef.current.position.y = floatY - scrollFloat;
 
     // Scale slightly with scroll for depth effect
-    const scale = 1 - scrollProgress * 0.2;
+    const scale = 1 - safeScrollProgress * 0.2;
     groupRef.current.scale.setScalar(scale);
   });
 
@@ -134,6 +139,9 @@ export function PrismCenterpiece({
     };
   }, [device]);
 
+  // Use a simpler material when WebGL2 is unavailable or GPU is low tier
+  const supportsTransmission = device?.hasWebGL2 !== false && device?.gpu !== "low";
+
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
       {/* Point lights for rainbow refraction highlights */}
@@ -148,31 +156,45 @@ export function PrismCenterpiece({
         position={[0, 0, -0.75]}
         castShadow
         receiveShadow
+        frustumCulled={false}
       >
-        <MeshTransmissionMaterial
-          envMap={envMap}
-          background={backgroundColor}
-          backside={true}
-          samples={materialSettings.samples}
-          resolution={materialSettings.resolution}
-          transmission={materialSettings.transmission}
-          roughness={0.05}
-          thickness={materialSettings.thickness}
-          ior={2.4}
-          chromaticAberration={materialSettings.chromaticAberration}
-          anisotropicBlur={materialSettings.anisotropicBlur}
-          distortion={0.2}
-          distortionScale={0.3}
-          temporalDistortion={0.1}
-          clearcoat={1}
-          attenuationDistance={0.5}
-          attenuationColor="#9333ea"
-          color="#e9d5ff"
-        />
+        {supportsTransmission ? (
+          <MeshTransmissionMaterial
+            envMap={envMap}
+            background={backgroundColor}
+            backside={true}
+            samples={materialSettings.samples}
+            resolution={materialSettings.resolution}
+            transmission={materialSettings.transmission}
+            roughness={0.05}
+            thickness={materialSettings.thickness}
+            ior={2.4}
+            chromaticAberration={materialSettings.chromaticAberration}
+            anisotropicBlur={materialSettings.anisotropicBlur}
+            distortion={0.2}
+            distortionScale={0.3}
+            temporalDistortion={0.1}
+            clearcoat={1}
+            attenuationDistance={0.5}
+            attenuationColor="#9333ea"
+            color="#e9d5ff"
+          />
+        ) : (
+          <meshPhysicalMaterial
+            color="#e9d5ff"
+            emissive="#a855f7"
+            emissiveIntensity={0.25}
+            roughness={0.2}
+            metalness={0.6}
+            clearcoat={1}
+            transparent
+            opacity={0.85}
+          />
+        )}
       </mesh>
 
       {/* Inner glow mesh for enhanced effect */}
-      <mesh position={[0, 0, -0.75]} scale={0.95}>
+      <mesh position={[0, 0, -0.75]} scale={0.95} frustumCulled={false}>
         <boxGeometry args={[0.5, 0.5, 0.5]} />
         <meshBasicMaterial
           color="#a855f7"

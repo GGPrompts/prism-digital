@@ -24,6 +24,10 @@ export function Scene() {
   const scrollState = useGSAPScroll();
   const device = useDeviceDetection();
   const enableEffects = shouldEnableEffects(device);
+  const scrollProgress = Math.min(
+    Math.max(Number.isFinite(scrollState.scrollProgress) ? scrollState.scrollProgress : 0, 0),
+    1
+  );
 
   const lightRef = useRef<THREE.AmbientLight>(null);
   const envRef = useRef<THREE.Group>(null);
@@ -32,13 +36,13 @@ export function Scene() {
     // Adjust lighting based on scroll
     if (lightRef.current) {
       // Increase intensity as user scrolls to make features more visible
-      lightRef.current.intensity = 0.2 + scrollState.scrollProgress * 0.3;
+      lightRef.current.intensity = 0.2 + scrollProgress * 0.3;
     }
 
     // Subtle environment rotation based on scroll (reduce on mobile)
     if (envRef.current) {
       const rotationMultiplier = device.isMobile ? 0.1 : 0.2;
-      envRef.current.rotation.y = scrollState.scrollProgress * Math.PI * rotationMultiplier;
+      envRef.current.rotation.y = scrollProgress * Math.PI * rotationMultiplier;
     }
   });
 
@@ -54,15 +58,15 @@ export function Scene() {
 
       {/* Prism centerpiece - brand focal point */}
       <PrismCenterpiece
-        scrollProgress={scrollState.scrollProgress}
+        scrollProgress={scrollProgress}
         device={device}
       />
 
       {/* Hero particle system with interactions */}
-      <Hero3D scrollProgress={scrollState.scrollProgress} device={device} />
+      <Hero3D scrollProgress={scrollProgress} device={device} />
 
       {/* Features section morphing particles */}
-      <FeaturesParticles scrollProgress={scrollState.scrollProgress} device={device} />
+      <FeaturesParticles scrollProgress={scrollProgress} device={device} />
 
       {/* Post-processing effects - disabled on low-end devices and most mobile */}
       {enableEffects && <Effects device={device} />}

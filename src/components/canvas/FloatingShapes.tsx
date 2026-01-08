@@ -31,9 +31,11 @@ function FloatingShape({ config, mouse, scrollOffset, index }: FloatingShapeProp
   useFrame((state, delta) => {
     if (!meshRef.current) return;
 
+    // Normalize scroll to guard against tiny jitters or non-finite values
+    const safeScroll = Number.isFinite(scrollOffset) ? scrollOffset : 0;
     // Some browsers can report tiny non-zero scroll offsets on initial load.
     // Treat very small values as 0 so shapes don't "disappear" immediately.
-    const effectiveScroll = scrollOffset < 0.02 ? 0 : scrollOffset;
+    const effectiveScroll = safeScroll < 0.02 ? 0 : THREE.MathUtils.clamp(safeScroll, 0, 1);
 
     // Smooth rotation
     meshRef.current.rotation.x += delta * config.rotationSpeed * 0.3;
@@ -91,6 +93,7 @@ function FloatingShape({ config, mouse, scrollOffset, index }: FloatingShapeProp
         ref={meshRef}
         position={config.position}
         scale={config.scale}
+        frustumCulled={false}
       >
         {geometry}
         <meshPhysicalMaterial

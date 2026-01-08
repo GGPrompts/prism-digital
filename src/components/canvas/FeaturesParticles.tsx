@@ -93,11 +93,14 @@ export function FeaturesParticles({ scrollProgress = 0, device }: FeaturesPartic
     if (!meshRef.current) return;
 
     const time = state.clock.getElapsedTime();
+    const safeScroll = Number.isFinite(scrollProgress)
+      ? THREE.MathUtils.clamp(scrollProgress, 0, 1)
+      : 0;
 
     // Smooth scroll interpolation
     smoothScrollRef.current = THREE.MathUtils.lerp(
       smoothScrollRef.current,
-      scrollProgress,
+      safeScroll,
       0.08
     );
     const scroll = smoothScrollRef.current;

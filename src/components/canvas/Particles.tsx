@@ -71,6 +71,9 @@ export function Particles({
     if (!meshRef.current) return;
 
     const time = state.clock.getElapsedTime();
+    const safeScroll = Number.isFinite(scrollOffset)
+      ? scrollOffset
+      : 0;
 
     // Reduce interaction strength on mobile for better performance
     const mouseInfluence = device?.isMobile ? 1.5 : 2.5;
@@ -119,7 +122,7 @@ export function Particles({
       }
 
       // Scroll reactivity - expand/contract particle field
-      const scrollEffect = Math.sin(scrollOffset * Math.PI) * scrollInfluence;
+      const scrollEffect = Math.sin(safeScroll * Math.PI) * scrollInfluence;
       const radius = Math.sqrt(x * x + y * y + z * z);
       const targetRadius = radius + scrollEffect * 0.1;
       const radiusNorm = targetRadius / radius;
@@ -137,7 +140,7 @@ export function Particles({
 
       // Size variation based on depth and scroll
       const depthScale = 1 - z / 15;
-      const scrollScale = 1 + scrollOffset * 0.3;
+      const scrollScale = 1 + safeScroll * 0.3;
       const baseSize = 0.015 + Math.random() * 0.02;
       const scale = baseSize * depthScale * scrollScale;
       tempObject.scale.setScalar(scale);
