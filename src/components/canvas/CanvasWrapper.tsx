@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { Preload } from "@react-three/drei";
+import { Preload, ScrollControls } from "@react-three/drei";
 import { Leva } from "leva";
 import { Suspense } from "react";
 import { Scene } from "./Scene";
@@ -23,7 +23,9 @@ export function CanvasWrapper() {
         camera={{ position: [0, 0, 5], fov: 45 }}
       >
         <Suspense fallback={null}>
-          <Scene />
+          <ScrollControls pages={3} damping={0.1}>
+            <Scene />
+          </ScrollControls>
           <Preload all />
         </Suspense>
       </Canvas>

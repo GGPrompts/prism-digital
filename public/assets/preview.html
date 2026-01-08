@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prism Digital - Asset Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #0a0015 100%);
+            color: #ffffff;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #8b00ff 0%, #d580ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #9999ff;
+            margin-bottom: 3rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #d580ff;
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .asset-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 0, 255, 0.6);
+        }
+
+        .asset-preview {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .asset-preview.checkered {
+            background-image:
+                linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.1) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.1) 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .asset-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .asset-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .asset-info {
+            font-size: 0.9rem;
+            color: #9999ff;
+            line-height: 1.6;
+        }
+
+        .asset-info span {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(139, 0, 255, 0.2);
+            border: 1px solid rgba(139, 0, 255, 0.4);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            color: #d580ff;
+        }
+
+        .hdri-links {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .hdri-links h3 {
+            color: #8b00ff;
+            margin-bottom: 1rem;
+        }
+
+        .hdri-links a {
+            display: block;
+            color: #9999ff;
+            text-decoration: none;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(139, 0, 255, 0.2);
+            transition: color 0.2s;
+        }
+
+        .hdri-links a:hover {
+            color: #d580ff;
+        }
+
+        .hdri-links a:last-child {
+            border-bottom: none;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(139, 0, 255, 0.1);
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #8b00ff;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #9999ff;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prism Digital</h1>
+        <p class="subtitle">3D Asset Preview - Building the Future of Web3D</p>
+
+        <div class="section">
+            <h2 class="section-title">Textures</h2>
+            <div class="asset-grid">
+                <div class="asset-card">
+                    <div class="asset-preview">
+                        <img src="textures/purple-gradient.svg" alt="Purple Gradient">
+                    </div>
+                    <div class="asset-name">Purple Gradient</div>
+                    <div class="asset-info">
+                        <span>Size: 256x256</span>
+                        <span>Colors: #1a0033 → #d580ff</span>
+                        <span>Use: Scene theming, color ramps</span>
+                        <span class="badge">SVG</span>
+                    </div>
+                </div>
+
+                <div class="asset-card">
+                    <div class="asset-preview">
+                        <img src="textures/noise.svg" alt="Noise Texture">
+                    </div>
+                    <div class="asset-name">Perlin Noise</div>
+                    <div class="asset-info">
+                        <span>Size: 512x512</span>
+                        <span>Type: Fractal noise, seamless</span>
+                        <span>Use: Particle displacement</span>
+                        <span class="badge">SVG</span>
+                    </div>
+                </div>
+
+                <div class="asset-card">
+                    <div class="asset-preview">
+                        <img src="textures/matcap-metallic.svg" alt="Matcap Texture">
+                    </div>
+                    <div class="asset-name">Metallic Matcap</div>
+                    <div class="asset-info">
+                        <span>Size: 256x256</span>
+                        <span>Type: Spherical gradient</span>
+                        <span>Use: Material capture shading</span>
+                        <span class="badge">SVG</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Particle Sprites</h2>
+            <div class="asset-grid">
+                <div class="asset-card">
+                    <div class="asset-preview checkered">
+                        <img src="sprites/particle-glow.svg" alt="Particle Glow" style="width: 128px; height: 128px;">
+                    </div>
+                    <div class="asset-name">Particle Glow</div>
+                    <div class="asset-info">
+                        <span>Size: 64x64</span>
+                        <span>Falloff: Sharp center</span>
+                        <span>Use: Primary particles, focal points</span>
+                        <span class="badge">SVG + Alpha</span>
+                    </div>
+                </div>
+
+                <div class="asset-card">
+                    <div class="asset-preview checkered">
+                        <img src="sprites/particle-soft.svg" alt="Particle Soft" style="width: 128px; height: 128px;">
+                    </div>
+                    <div class="asset-name">Particle Soft</div>
+                    <div class="asset-info">
+                        <span>Size: 64x64</span>
+                        <span>Falloff: Gentle, gradual</span>
+                        <span>Use: Background particles, atmosphere</span>
+                        <span class="badge">SVG + Alpha</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">HDRI Environments</h2>
+            <div class="hdri-links">
+                <h3>Poly Haven HDRIs (CC0 License)</h3>
+                <a href="https://polyhaven.com/a/studio_small_03" target="_blank">
+                    Studio Night - Dark studio lighting, minimal reflections
+                </a>
+                <a href="https://polyhaven.com/a/moonless_golf" target="_blank">
+                    Moonless Golf - Night sky environment
+                </a>
+                <a href="https://polyhaven.com/a/studio_small_09" target="_blank">
+                    Dark Studio - Moody studio setup
+                </a>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Textures</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">HDRIs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">~3KB</div>
+                    <div class="stat-label">Total Size</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">SVG</div>
+                    <div class="stat-label">Format</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Documentation</h2>
+            <div class="hdri-links">
+                <h3>Asset Files</h3>
+                <a href="README.md">README.md - Complete Documentation</a>
+                <a href="hdri/hdri-config.json">hdri-config.json - HDRI Configuration</a>
+                <a href="../../../src/lib/assets.ts">assets.ts - TypeScript Manifest</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "environments": {
+    "studioNight": {
+      "name": "Studio Night",
+      "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_03_1k.hdr",
+      "description": "Dark studio lighting with minimal reflections, perfect for particle scenes",
+      "resolution": "1k",
+      "license": "CC0",
+      "source": "Poly Haven"
+    },
+    "moonlessGolf": {
+      "name": "Moonless Golf",
+      "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/moonless_golf_1k.hdr",
+      "description": "Dark night sky with minimal ambient light",
+      "resolution": "1k",
+      "license": "CC0",
+      "source": "Poly Haven"
+    },
+    "darkStudio": {
+      "name": "Dark Studio",
+      "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr",
+      "description": "Moody studio setup with controlled lighting",
+      "resolution": "1k",
+      "license": "CC0",
+      "source": "Poly Haven"
+    }
+  },
+  "usage": {
+    "note": "These HDRIs are hosted on Poly Haven and can be loaded directly via URL in React Three Fiber using @react-three/drei's Environment component",
+    "example": "<Environment files={HDRI_ASSETS.studioNight.url} />"
+  },
+  "alternatives": {
+    "preset": "Use drei's Environment preset='night' for quick setup without external files",
+    "local": "Download HDRIs from Poly Haven and place in this directory for offline use"
+  }
+}

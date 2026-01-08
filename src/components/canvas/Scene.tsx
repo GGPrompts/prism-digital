@@ -1,27 +1,23 @@
 "use client";
 
 import { Environment } from "@react-three/drei";
+import { Hero3D } from "./Hero3D";
+import { Effects } from "./Effects";
 
 export function Scene() {
   return (
     <>
-      {/* Ambient lighting for visibility */}
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[10, 10, 5]} intensity={1} />
+      {/* Subtle ambient lighting */}
+      <ambientLight intensity={0.2} />
 
-      {/* Environment for reflections */}
+      {/* Environment for atmosphere */}
       <Environment preset="night" />
 
-      {/* Placeholder mesh - will be replaced with particle system */}
-      <mesh>
-        <icosahedronGeometry args={[1, 1]} />
-        <meshStandardMaterial
-          color="#8b5cf6"
-          wireframe
-          emissive="#8b5cf6"
-          emissiveIntensity={0.2}
-        />
-      </mesh>
+      {/* Hero particle system with interactions */}
+      <Hero3D />
+
+      {/* Post-processing effects */}
+      <Effects />
     </>
   );
 }
