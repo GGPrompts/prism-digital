@@ -1,15 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, type ReactNode } from 'react'
+import { Twitter, Linkedin, Instagram, Github } from 'lucide-react'
 
 export function Footer() {
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const [emailFocused, setEmailFocused] = useState(false)
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'Services', href: '#services' },
-    { name: 'Work', href: '#work' },
+    { name: 'Home', href: '#hero' },
+    { name: 'Features', href: '#features' },
     { name: 'About', href: '#about' },
     { name: 'Contact', href: '#contact' },
   ]
@@ -20,12 +20,26 @@ export function Footer() {
     'WebGL Development',
   ]
 
-  const socialLinks = [
-    { name: 'Twitter', href: 'https://twitter.com/prismdigital', icon: 'X' },
-    { name: 'LinkedIn', href: 'https://linkedin.com/company/prismdigital', icon: 'in' },
-    { name: 'Instagram', href: 'https://instagram.com/prismdigital', icon: 'IG' },
-    { name: 'GitHub', href: 'https://github.com/prismdigital', icon: 'GH' },
+  const socialLinks: { name: string; href: string; icon: ReactNode }[] = [
+    { name: 'Twitter', href: 'https://twitter.com/prismdigital', icon: <Twitter className="h-5 w-5" /> },
+    { name: 'LinkedIn', href: 'https://linkedin.com/company/prismdigital', icon: <Linkedin className="h-5 w-5" /> },
+    { name: 'Instagram', href: 'https://instagram.com/prismdigital', icon: <Instagram className="h-5 w-5" /> },
+    { name: 'GitHub', href: 'https://github.com/prismdigital', icon: <Github className="h-5 w-5" /> },
   ]
+
+  // Smooth scroll handler for navigation links
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault()
+    const targetId = href.replace('#', '')
+    const element = document.getElementById(targetId)
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }
+  }, [])
 
   return (
     <footer className="relative overflow-hidden border-t border-primary/10 bg-background-secondary">
@@ -113,9 +127,10 @@ export function Footer() {
                 <a
                   key={link.name}
                   href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href)}
                   onMouseEnter={() => setHoveredLink(link.name)}
                   onMouseLeave={() => setHoveredLink(null)}
-                  className="group relative block text-foreground-muted transition-colors duration-300 hover:text-primary"
+                  className="group relative block cursor-pointer text-foreground-muted transition-colors duration-300 hover:text-primary"
                   style={{
                     animationDelay: `${index * 50}ms`,
                   }}
@@ -192,14 +207,14 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative flex h-12 w-12 items-center justify-center overflow-hidden border border-border bg-background-tertiary/50 transition-all duration-300 hover:border-primary hover:bg-primary/10 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]"
+                  className="group relative flex h-12 w-12 items-center justify-center overflow-hidden border border-border bg-background-tertiary/50 transition-all duration-300 hover:border-primary hover:bg-primary/10 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:scale-110"
                   style={{
                     clipPath: 'polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%)',
                     animationDelay: `${index * 40}ms`,
                   }}
                   aria-label={social.name}
                 >
-                  <span className="text-xs font-bold text-foreground-muted transition-all duration-300 group-hover:scale-110 group-hover:text-primary">
+                  <span className="text-foreground-muted transition-all duration-300 group-hover:text-primary">
                     {social.icon}
                   </span>
 

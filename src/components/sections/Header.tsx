@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect, useCallback } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 /**
@@ -79,6 +78,23 @@ export function Header() {
     { href: "#contact", label: "Contact" },
   ];
 
+  // Smooth scroll handler for navigation links
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const targetId = href.replace('#', '');
+    const element = document.getElementById(targetId);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+
+    // Close mobile menu if open
+    setMobileMenuOpen(false);
+  }, []);
+
   return (
     <>
       <header
@@ -93,12 +109,14 @@ export function Header() {
       >
         <nav className="container-custom flex items-center justify-between h-20 px-6">
           {/* Logo */}
-          <Link
-            href="#"
+          <a
+            href="#hero"
+            onClick={(e) => handleNavClick(e, '#hero')}
             className="
               logo group relative z-10
               text-2xl font-bold tracking-tighter
               transition-all duration-300 ease-out
+              cursor-pointer
             "
           >
             <span className="
@@ -127,7 +145,7 @@ export function Header() {
               transition-all duration-500 ease-out-expo
               shadow-glow
             " />
-          </Link>
+          </a>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
@@ -137,8 +155,9 @@ export function Header() {
             <ul className="flex items-center gap-1">
               {navLinks.map((link, index) => (
                 <li key={link.href}>
-                  <Link
+                  <a
                     href={link.href}
+                    onClick={(e) => handleNavClick(e, link.href)}
                     className="
                       nav-link group relative
                       px-4 py-2 rounded-lg
@@ -146,6 +165,7 @@ export function Header() {
                       font-medium text-sm tracking-wide uppercase
                       transition-all duration-300 ease-out
                       hover:bg-white/5
+                      cursor-pointer
                     "
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
@@ -166,14 +186,15 @@ export function Header() {
                       scale-x-0 group-hover:scale-x-100
                       transition-transform duration-300 ease-out-expo
                     " />
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
 
             {/* CTA Button */}
-            <Link
+            <a
               href="#contact"
+              onClick={(e) => handleNavClick(e, '#contact')}
               className="
                 cta-button relative group
                 px-6 py-2.5 rounded-lg
@@ -188,6 +209,7 @@ export function Header() {
                 active:scale-100
                 border border-primary/50 hover:border-primary
                 overflow-hidden
+                cursor-pointer
               "
             >
               <span className="relative z-10">See Our Work</span>
@@ -207,7 +229,7 @@ export function Header() {
                 -translate-x-full group-hover:translate-x-full
                 transition-transform duration-700 ease-out
               " />
-            </Link>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -319,9 +341,9 @@ export function Header() {
           <ul className="space-y-2">
             {navLinks.map((link, index) => (
               <li key={link.href}>
-                <Link
+                <a
                   href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => handleNavClick(e, link.href)}
                   className="
                     block group relative
                     px-6 py-4 rounded-xl
@@ -330,6 +352,7 @@ export function Header() {
                     bg-white/5 hover:bg-white/10
                     border border-white/10 hover:border-primary/50
                     transition-all duration-300 ease-out
+                    cursor-pointer
                   "
                   style={{
                     animationDelay: `${index * 100}ms`,
@@ -347,16 +370,16 @@ export function Header() {
                     bg-gradient-to-r from-primary/20 to-accent-pink/20
                     transition-opacity duration-300
                   " />
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
 
           {/* Mobile CTA */}
           <div className="mt-8">
-            <Link
+            <a
               href="#contact"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={(e) => handleNavClick(e, '#contact')}
               className="
                 block group relative
                 px-8 py-5 rounded-xl
@@ -369,6 +392,7 @@ export function Header() {
                 transition-all duration-300 ease-out
                 border border-primary/50 hover:border-primary
                 overflow-hidden
+                cursor-pointer
               "
               style={{
                 animationDelay: `${navLinks.length * 100}ms`,
@@ -386,7 +410,7 @@ export function Header() {
                 opacity-0 group-hover:opacity-100
                 transition-opacity duration-500
               " />
-            </Link>
+            </a>
           </div>
 
           {/* Mobile menu footer tagline */}

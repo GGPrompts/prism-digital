@@ -1,6 +1,7 @@
 import { Hero } from '@/components/sections/Hero'
 import { Process } from '@/components/sections/Process'
 import Testimonials from '@/components/sections/Testimonials'
+import { CTA } from '@/components/sections/CTA'
 import { Footer } from '@/components/sections/Footer'
 
 export default function Home() {
@@ -42,8 +43,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Process Section - How We Work */}
-      <div id="process">
+      {/* Process Section - How We Work / About Us */}
+      <div id="about">
         <Process />
       </div>
 
@@ -51,6 +52,9 @@ export default function Home() {
       <div id="testimonials">
         <Testimonials />
       </div>
+
+      {/* CTA / Contact Section */}
+      <CTA />
 
       {/* Footer */}
       <Footer />
