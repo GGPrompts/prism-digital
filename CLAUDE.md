@@ -70,16 +70,6 @@ src/
 
 This project uses beads for issue tracking. Run `bd ready` to see available tasks.
 
-#### Wave Execution Order
-
-| Wave | Focus | Parallel? |
-|------|-------|-----------|
-| 0 | Asset generation | Yes (with Wave 1) |
-| 1 | Foundation setup | Yes (3 parallel) |
-| 2 | 3D + UI components | Yes (8 parallel) |
-| 3 | Polish + optimization | Yes (6 parallel) |
-| 4 | QA checkpoint | Sequential |
-
 #### Worker Commands
 
 ```bash
@@ -89,6 +79,22 @@ This project uses beads for issue tracking. Run `bd ready` to see available task
 # Full autonomous mode
 /conductor:bd-swarm-auto
 ```
+
+#### Completion Protocol
+
+**Before marking work complete**, run the conductor pipeline:
+
+```bash
+/conductor:verify-build      # Build and check for errors
+/conductor:code-review       # Opus review with auto-fix
+/conductor:commit-changes    # Stage + commit
+/conductor:close-issue <id>  # Close beads issue
+bd sync && git push          # Push everything
+```
+
+Or use the full pipeline: `/conductor:worker-done <id>`
+
+See `.beads/PRIME.md` for detailed workflow documentation.
 
 ### 3D Development Guidelines
 
@@ -172,3 +178,47 @@ Before marking issues complete:
 - [ ] No WebGL errors in console
 - [ ] Accessible (keyboard nav, screen reader)
 - [ ] Dark mode works
+
+---
+
+## AI Assistant Notes
+
+### Skills for 3D Development
+
+| Skill | When to Use |
+|-------|-------------|
+| `r3f-fundamentals` | Canvas setup, useFrame, useThree, R3F patterns |
+| `r3f-materials` | Custom shaders, uniforms, drei shaderMaterial |
+| `threejs-builder` | Vanilla Three.js scenes, WebGPU renderer |
+| `building-3d-graphics` | Advanced: instancing, physics, complex scenes |
+| `3d-composition-visualization` | Interactive visualizations, drill-down views |
+
+**Trigger with:** "use the r3f-fundamentals skill for scroll animations"
+
+### Slash Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/conductor:bd-work` | Pick top beads issue and start working |
+| `/conductor:bd-swarm-auto` | Fully autonomous parallel issue processing |
+| `/conductor:worker-done <id>` | Full completion pipeline |
+| `/conductor:code-review` | Autonomous code review |
+| `/conductor:verify-build` | Build and check for errors |
+
+### Autonomous Debugging
+
+```bash
+# Check build without asking user
+npm run build 2>&1 | head -50
+
+# Check for WebGL errors in browser console
+# Use tabz_get_console_logs MCP tool
+```
+
+### When Making Changes
+
+1. Check existing patterns in `src/components/canvas/`
+2. Follow R3F conventions (declarative, useFrame for animation)
+3. Test at multiple scroll positions
+4. Update CHANGELOG.md after fixes
+5. Run build before committing
