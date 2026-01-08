@@ -1,0 +1,186 @@
+"use client";
+
+import { useRef, useMemo } from "react";
+import { useFrame } from "@react-three/fiber";
+import { MeshTransmissionMaterial, useEnvironment } from "@react-three/drei";
+import * as THREE from "three";
+import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
+
+interface PrismCenterpieceProps {
+  scrollProgress?: number;
+  device?: DeviceCapabilities;
+}
+
+/**
+ * 3D Prism Centerpiece
+ *
+ * A glass/crystal prism with rainbow light refraction,
+ * serving as the brand centerpiece for Prism Digital.
+ */
+export function PrismCenterpiece({
+  scrollProgress = 0,
+  device,
+}: PrismCenterpieceProps) {
+  const meshRef = useRef<THREE.Mesh>(null!);
+  const groupRef = useRef<THREE.Group>(null!);
+
+  // Load environment for reflections
+  const envMap = useEnvironment({ preset: "night" });
+
+  // Create triangular prism geometry (extruded triangle)
+  const geometry = useMemo(() => {
+    const shape = new THREE.Shape();
+    const size = 1;
+
+    // Equilateral triangle
+    shape.moveTo(0, size);
+    shape.lineTo(-size * 0.866, -size * 0.5);
+    shape.lineTo(size * 0.866, -size * 0.5);
+    shape.closePath();
+
+    const extrudeSettings = {
+      steps: 1,
+      depth: 1.5,
+      bevelEnabled: true,
+      bevelThickness: 0.05,
+      bevelSize: 0.05,
+      bevelSegments: 3,
+    };
+
+    return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  }, []);
+
+  // Pre-allocate for animation
+  const smoothRotation = useRef({ x: 0, y: 0, z: 0 });
+  const targetRotation = useRef({ x: 0, y: 0, z: 0 });
+
+  useFrame((state) => {
+    if (!meshRef.current || !groupRef.current) return;
+
+    const time = state.clock.getElapsedTime();
+
+    // Slow, elegant rotation
+    const rotationSpeed = device?.isMobile ? 0.15 : 0.2;
+    targetRotation.current.y = time * rotationSpeed;
+    targetRotation.current.x = Math.sin(time * 0.1) * 0.1;
+    targetRotation.current.z = Math.cos(time * 0.08) * 0.05;
+
+    // Smooth lerp to target rotation
+    smoothRotation.current.x = THREE.MathUtils.lerp(
+      smoothRotation.current.x,
+      targetRotation.current.x,
+      0.05
+    );
+    smoothRotation.current.y = THREE.MathUtils.lerp(
+      smoothRotation.current.y,
+      targetRotation.current.y,
+      0.05
+    );
+    smoothRotation.current.z = THREE.MathUtils.lerp(
+      smoothRotation.current.z,
+      targetRotation.current.z,
+      0.05
+    );
+
+    meshRef.current.rotation.set(
+      smoothRotation.current.x,
+      smoothRotation.current.y,
+      smoothRotation.current.z
+    );
+
+    // Subtle float based on scroll
+    const floatY = Math.sin(time * 0.5) * 0.1;
+    const scrollFloat = scrollProgress * 0.5;
+    groupRef.current.position.y = floatY - scrollFloat;
+
+    // Scale slightly with scroll for depth effect
+    const scale = 1 - scrollProgress * 0.2;
+    groupRef.current.scale.setScalar(scale);
+  });
+
+  // Pre-allocate color to avoid GC in render
+  const backgroundColor = useMemo(() => new THREE.Color("#0a0a0a"), []);
+
+  // Adaptive material settings based on device capability
+  const materialSettings = useMemo(() => {
+    if (device?.gpu === "low") {
+      return {
+        samples: 4,
+        resolution: 256,
+        transmission: 0.9,
+        thickness: 1,
+        chromaticAberration: 0.3,
+        anisotropicBlur: 0.2,
+      };
+    }
+    if (device?.gpu === "medium" || device?.isMobile) {
+      return {
+        samples: 8,
+        resolution: 512,
+        transmission: 0.95,
+        thickness: 1.5,
+        chromaticAberration: 0.5,
+        anisotropicBlur: 0.3,
+      };
+    }
+    // High-end settings
+    return {
+      samples: 16,
+      resolution: 1024,
+      transmission: 1,
+      thickness: 2,
+      chromaticAberration: 0.8,
+      anisotropicBlur: 0.5,
+    };
+  }, [device]);
+
+  return (
+    <group ref={groupRef} position={[0, 0, 0]}>
+      {/* Point lights for rainbow refraction highlights */}
+      <pointLight position={[3, 2, 2]} intensity={2} color="#ff6b9d" />
+      <pointLight position={[-3, -1, 2]} intensity={1.5} color="#6366f1" />
+      <pointLight position={[0, 3, -2]} intensity={1} color="#22d3ee" />
+
+      {/* Main prism mesh */}
+      <mesh
+        ref={meshRef}
+        geometry={geometry}
+        position={[0, 0, -0.75]}
+        castShadow
+        receiveShadow
+      >
+        <MeshTransmissionMaterial
+          envMap={envMap}
+          background={backgroundColor}
+          backside={true}
+          samples={materialSettings.samples}
+          resolution={materialSettings.resolution}
+          transmission={materialSettings.transmission}
+          roughness={0.05}
+          thickness={materialSettings.thickness}
+          ior={2.4}
+          chromaticAberration={materialSettings.chromaticAberration}
+          anisotropicBlur={materialSettings.anisotropicBlur}
+          distortion={0.2}
+          distortionScale={0.3}
+          temporalDistortion={0.1}
+          clearcoat={1}
+          attenuationDistance={0.5}
+          attenuationColor="#9333ea"
+          color="#e9d5ff"
+        />
+      </mesh>
+
+      {/* Inner glow mesh for enhanced effect */}
+      <mesh position={[0, 0, -0.75]} scale={0.95}>
+        <boxGeometry args={[0.5, 0.5, 0.5]} />
+        <meshBasicMaterial
+          color="#a855f7"
+          transparent
+          opacity={0.1}
+          toneMapped={false}
+        />
+      </mesh>
+    </group>
+  );
+}
