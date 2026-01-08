@@ -6,6 +6,7 @@ import { useRef } from "react";
 import * as THREE from "three";
 import { Hero3D } from "./Hero3D";
 import { PrismCenterpiece } from "./PrismCenterpiece";
+import { FeaturesParticles } from "./FeaturesParticles";
 import { Effects } from "./Effects";
 import { useGSAPScroll } from "@/hooks/useGSAPScroll";
 import { useDeviceDetection, shouldEnableEffects } from "@/hooks/useDeviceDetection";
@@ -59,6 +60,9 @@ export function Scene() {
 
       {/* Hero particle system with interactions */}
       <Hero3D scrollProgress={scrollState.scrollProgress} device={device} />
+
+      {/* Features section morphing particles */}
+      <FeaturesParticles scrollProgress={scrollState.scrollProgress} device={device} />
 
       {/* Post-processing effects - disabled on low-end devices and most mobile */}
       {enableEffects && <Effects device={device} />}
