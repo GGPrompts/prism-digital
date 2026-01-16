@@ -70,32 +70,6 @@ src/
 
 This project uses beads for issue tracking. Run `bd ready` to see available tasks.
 
-#### Worker Commands
-
-```bash
-# Start working on ready issues
-/conductor:bd-work
-
-# Full autonomous mode
-/conductor:bd-swarm-auto
-```
-
-#### Completion Protocol
-
-**Before marking work complete**, run the conductor pipeline:
-
-```bash
-/conductor:verify-build      # Build and check for errors
-/conductor:code-review       # Opus review with auto-fix
-/conductor:commit-changes    # Stage + commit
-/conductor:close-issue <id>  # Close beads issue
-bd sync && git push          # Push everything
-```
-
-Or use the full pipeline: `/conductor:worker-done <id>`
-
-See `.beads/PRIME.md` for detailed workflow documentation.
-
 ### 3D Development Guidelines
 
 #### React Three Fiber Patterns
@@ -194,16 +168,6 @@ Before marking issues complete:
 | `3d-composition-visualization` | Interactive visualizations, drill-down views |
 
 **Trigger with:** "use the r3f-fundamentals skill for scroll animations"
-
-### Slash Commands
-
-| Command | Purpose |
-|---------|---------|
-| `/conductor:bd-work` | Pick top beads issue and start working |
-| `/conductor:bd-swarm-auto` | Fully autonomous parallel issue processing |
-| `/conductor:worker-done <id>` | Full completion pipeline |
-| `/conductor:code-review` | Autonomous code review |
-| `/conductor:verify-build` | Build and check for errors |
 
 ### Autonomous Debugging
 
