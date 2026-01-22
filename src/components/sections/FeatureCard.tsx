@@ -1,6 +1,7 @@
 "use client";
 
 import { LucideIcon } from "lucide-react";
+import { useCardParallax } from "@/hooks/useCardParallax";
 
 interface FeatureCardProps {
   icon: LucideIcon;
@@ -15,8 +16,17 @@ export function FeatureCard({
   description,
   index,
 }: FeatureCardProps) {
+  const cardRef = useCardParallax<HTMLDivElement>({
+    maxTilt: 8,
+    animationDuration: 0.4,
+    shadowShift: true,
+    maxShadowOffset: 15,
+    perspective: 1000,
+  });
+
   return (
     <div
+      ref={cardRef}
       className="feature-card glass-card group relative overflow-hidden p-8"
       style={{
         animationDelay: `${index * 150}ms`,
