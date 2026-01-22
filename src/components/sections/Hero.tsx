@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTextRevealOnRef } from '@/hooks/useTextReveal'
+import { MagneticButton } from '@/components/ui/MagneticButton'
 
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
@@ -186,13 +187,23 @@ export function Hero() {
               className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 pt-4 md:pt-8 hero-cta"
               style={{ opacity: 0 }}
             >
-              <button className="btn btn-primary glow-pulse">
+              <MagneticButton
+                className="btn btn-primary glow-pulse magnetic-glow-primary"
+                magneticDistance={100}
+                maxOffset={12}
+                strength={0.35}
+              >
                 See Our Work
-              </button>
+              </MagneticButton>
 
-              <button className="btn btn-glass">
+              <MagneticButton
+                className="btn btn-glass magnetic-glow-glass"
+                magneticDistance={80}
+                maxOffset={10}
+                strength={0.3}
+              >
                 Learn More
-              </button>
+              </MagneticButton>
             </div>
 
           </div>

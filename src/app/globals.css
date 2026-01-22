@@ -1061,3 +1061,80 @@ blockquote {
   cursor: text !important;
 }
 
+/* -----------------------------------------------------------------------------
+   Magnetic Button Effects
+   ----------------------------------------------------------------------------- */
+
+/* Base magnetic button styles */
+.magnetic-button {
+  --magnetic-glow: 0;
+  position: relative;
+  overflow: visible;
+}
+
+.magnetic-button-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+/* Primary button magnetic glow */
+.magnetic-glow-primary {
+  box-shadow:
+    0 4px 14px var(--glow-primary-subtle),
+    0 0 calc(20px + 30px * var(--magnetic-glow)) rgba(168, 85, 247, calc(0.3 + 0.4 * var(--magnetic-glow)));
+  transition: box-shadow 0.2s ease-out;
+}
+
+.magnetic-glow-primary:hover {
+  box-shadow:
+    0 6px 20px var(--glow-primary),
+    0 0 calc(30px + 40px * var(--magnetic-glow)) rgba(168, 85, 247, calc(0.4 + 0.4 * var(--magnetic-glow)));
+}
+
+/* Glass button magnetic glow */
+.magnetic-glow-glass {
+  box-shadow:
+    0 0 calc(10px + 20px * var(--magnetic-glow)) rgba(168, 85, 247, calc(0.1 + 0.3 * var(--magnetic-glow)));
+  transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+  border-color: rgba(168, 85, 247, calc(0.2 + 0.3 * var(--magnetic-glow)));
+}
+
+.magnetic-glow-glass:hover {
+  box-shadow:
+    var(--shadow-glow),
+    0 0 calc(15px + 25px * var(--magnetic-glow)) rgba(168, 85, 247, calc(0.2 + 0.4 * var(--magnetic-glow)));
+}
+
+/* CTA section button magnetic glow */
+.magnetic-glow-cta {
+  box-shadow:
+    0 10px 40px rgba(168, 85, 247, calc(0.4 + 0.3 * var(--magnetic-glow))),
+    0 0 calc(60px + 40px * var(--magnetic-glow)) rgba(168, 85, 247, calc(0.2 + 0.3 * var(--magnetic-glow)));
+  transition: box-shadow 0.2s ease-out, transform 0.3s ease-out;
+}
+
+.magnetic-glow-cta:hover {
+  box-shadow:
+    0 15px 50px rgba(168, 85, 247, calc(0.5 + 0.3 * var(--magnetic-glow))),
+    0 0 calc(80px + 50px * var(--magnetic-glow)) rgba(168, 85, 247, calc(0.3 + 0.4 * var(--magnetic-glow)));
+}
+
+/* Focus state for magnetic buttons - accessibility */
+.magnetic-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+/* Disable magnetic effects on touch devices and reduced motion */
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .magnetic-button-content {
+    transform: none !important;
+  }
+
+  .magnetic-button {
+    --magnetic-glow: 0 !important;
+  }
+}
+
