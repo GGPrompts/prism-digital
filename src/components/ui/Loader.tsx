@@ -1,11 +1,39 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useProgress } from "@react-three/drei";
+import dynamic from "next/dynamic";
+
+// Dynamically import 3D scene to avoid SSR issues
+const Loader3DScene = dynamic(
+  () => import("./Loader3DScene").then((mod) => ({ default: mod.Loader3DScene })),
+  { ssr: false }
+);
+
+// Simple 2D fallback for when 3D is loading or unavailable
+function Loader2DFallback() {
+  return (
+    <div className="relative h-32 w-32">
+      {/* Outer rotating ring */}
+      <div className="absolute inset-0 animate-spin-slow">
+        <div className="h-full w-full rounded-full border-2 border-primary/30 border-t-primary" />
+      </div>
+      {/* Inner pulsing prism shape */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="prism-shape h-16 w-16 animate-pulse-slow" />
+      </div>
+      {/* Center dot */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="h-3 w-3 rounded-full bg-primary shadow-glow-primary animate-pulse" />
+      </div>
+    </div>
+  );
+}
 
 export function Loader() {
   const { progress, active, loaded, total } = useProgress();
   const [isExiting, setIsExiting] = useState(false);
+  const [is3DReady, setIs3DReady] = useState(false);
   const hasStartedLoading = useRef(false);
 
   // Track if we've ever had items to load
@@ -14,6 +42,12 @@ export function Loader() {
       hasStartedLoading.current = true;
     }
   }, [total]);
+
+  // Mark 3D as ready after a short delay to allow hydration
+  useEffect(() => {
+    const timer = setTimeout(() => setIs3DReady(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Case 1: Normal loading complete (had items, now done)
@@ -43,22 +77,15 @@ export function Loader() {
       }`}
     >
       <div className="flex flex-col items-center gap-8">
-        {/* Animated prism logo */}
+        {/* 3D Animated prism loader */}
         <div className="relative h-32 w-32">
-          {/* Outer rotating ring */}
-          <div className="absolute inset-0 animate-spin-slow">
-            <div className="h-full w-full rounded-full border-2 border-primary/30 border-t-primary" />
-          </div>
-
-          {/* Inner pulsing prism shape */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="prism-shape h-16 w-16 animate-pulse-slow" />
-          </div>
-
-          {/* Center dot */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-3 w-3 rounded-full bg-primary shadow-glow-primary animate-pulse" />
-          </div>
+          {is3DReady ? (
+            <Suspense fallback={<Loader2DFallback />}>
+              <Loader3DScene progress={progress} />
+            </Suspense>
+          ) : (
+            <Loader2DFallback />
+          )}
         </div>
 
         {/* Brand name */}
@@ -67,7 +94,7 @@ export function Loader() {
             PRISM DIGITAL
           </h1>
           <p className="mt-2 font-inter text-sm text-foreground-muted">
-            Building the Future of Web3D
+            Building your experience...
           </p>
         </div>
 
