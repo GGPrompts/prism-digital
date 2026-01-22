@@ -95,12 +95,33 @@ export function PrismCenterpiece({
 
     // Subtle float based on scroll
     const floatY = Math.sin(time * 0.5) * 0.1;
-    const scrollFloat = safeScrollProgress * 0.5;
-    groupRef.current.position.y = floatY - scrollFloat;
 
-    // Scale slightly with scroll for depth effect
-    const scale = 1 - safeScrollProgress * 0.2;
-    groupRef.current.scale.setScalar(scale);
+    // Fade out prism as user scrolls past hero (start at 10%, fully gone by 40%)
+    const fadeStart = 0.1;
+    const fadeEnd = 0.4;
+    const fadeProgress = THREE.MathUtils.clamp(
+      (safeScrollProgress - fadeStart) / (fadeEnd - fadeStart),
+      0,
+      1
+    );
+
+    // Move up and back as scrolling
+    groupRef.current.position.y = floatY + fadeProgress * 3;
+    groupRef.current.position.z = -fadeProgress * 5;
+
+    // Scale down as fading
+    const scale = 1 - fadeProgress * 0.5;
+    groupRef.current.scale.setScalar(Math.max(scale, 0.5));
+
+    // Fade opacity via material (we'll need to access children)
+    groupRef.current.traverse((child) => {
+      if (child instanceof THREE.Mesh && child.material) {
+        const mat = child.material as THREE.Material;
+        if ('opacity' in mat) {
+          (mat as THREE.MeshPhysicalMaterial).opacity = 1 - fadeProgress;
+        }
+      }
+    });
   });
 
   // Pre-allocate color to avoid GC in render

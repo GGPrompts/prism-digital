@@ -18,20 +18,8 @@ interface EffectsProps {
 }
 
 /**
- * Advanced post-processing effects with GPU-tier adaptive quality.
- *
- * Effects by tier:
- * - High (desktop): All effects - bloom, vignette, chromatic aberration, noise, color grading, scanlines
- * - Medium (tablet/mid-range): Bloom, vignette, noise (reduced intensity)
- * - Low (mobile/budget): Bloom and vignette only
- *
- * Effect order (optimized for visual blend):
- * 1. Vignette - base depth framing
- * 2. Bloom - particle glow
- * 3. Noise - film grain texture
- * 4. Chromatic aberration - edge color fringing
- * 5. Color grading (hue/saturation + brightness/contrast)
- * 6. Scanlines - retro-tech overlay
+ * Post-processing effects with GPU-tier adaptive quality.
+ * Tuned to avoid blurring text overlays.
  */
 export function Effects({ device }: EffectsProps) {
   const gl = useThree((state) => state.gl);
@@ -76,7 +64,6 @@ export function Effects({ device }: EffectsProps) {
     const gpuTier = device?.gpu ?? "high";
     const isMobile = device?.isMobile ?? false;
 
-    // Mobile devices max out at medium tier for battery/performance
     if (isMobile) {
       return gpuTier === "low" ? "low" : "medium";
     }
@@ -84,6 +71,9 @@ export function Effects({ device }: EffectsProps) {
     return gpuTier;
   }, [device?.gpu, device?.isMobile]);
 
+  // Adaptive bloom values based on GPU tier
+  const bloomIntensity = effectTier === "high" ? 0.5 : 0.4;
+  const bloomRadius = effectTier === "high" ? 0.4 : 0.3;
 
   if (!isComposerSafe) return null;
 
@@ -93,15 +83,15 @@ export function Effects({ device }: EffectsProps) {
       <EffectComposer multisampling={0} stencilBuffer={false}>
         <Vignette
           offset={0.3}
-          darkness={0.5}
+          darkness={0.4}
           blendFunction={BlendFunction.NORMAL}
         />
         <Bloom
-          intensity={0.8}
-          luminanceThreshold={0.2}
+          intensity={0.4}
+          luminanceThreshold={0.5}
           luminanceSmoothing={0.9}
           mipmapBlur={false}
-          radius={0.5}
+          radius={0.3}
           blendFunction={BlendFunction.ADD}
         />
       </EffectComposer>
@@ -114,54 +104,54 @@ export function Effects({ device }: EffectsProps) {
       <EffectComposer multisampling={0} stencilBuffer={false}>
         <Vignette
           offset={0.3}
-          darkness={0.5}
+          darkness={0.4}
           blendFunction={BlendFunction.NORMAL}
         />
         <Bloom
-          intensity={1.0}
-          luminanceThreshold={0.2}
+          intensity={0.5}
+          luminanceThreshold={0.4}
           luminanceSmoothing={0.9}
           mipmapBlur={false}
-          radius={0.5}
+          radius={0.4}
           blendFunction={BlendFunction.ADD}
         />
-        <Noise opacity={0.08} blendFunction={BlendFunction.OVERLAY} />
+        <Noise opacity={0.05} blendFunction={BlendFunction.OVERLAY} />
       </EffectComposer>
     );
   }
 
-  // High tier: all effects enabled (tuned for clarity)
+  // High tier: all effects (tuned for text clarity)
   return (
     <EffectComposer multisampling={0} stencilBuffer={false}>
-      {/* Vignette for depth - applied first as base */}
+      {/* Vignette for depth framing */}
       <Vignette
         offset={0.35}
-        darkness={0.4}
+        darkness={0.35}
         blendFunction={BlendFunction.NORMAL}
       />
 
-      {/* Bloom for glowing particles - reduced to avoid washing out text */}
+      {/* Bloom - reduced intensity to avoid washing out text */}
       <Bloom
-        intensity={0.6}
-        luminanceThreshold={0.4}
-        luminanceSmoothing={0.9}
+        intensity={bloomIntensity}
+        luminanceThreshold={0.5}
+        luminanceSmoothing={0.5}
         mipmapBlur={true}
-        radius={0.5}
+        radius={bloomRadius}
         blendFunction={BlendFunction.ADD}
       />
 
       {/* Film grain - subtle texture */}
-      <Noise opacity={0.06} blendFunction={BlendFunction.OVERLAY} />
+      <Noise opacity={0.04} blendFunction={BlendFunction.OVERLAY} />
 
-      {/* Color grading - enhance purples and cyans for brand colors */}
+      {/* Color grading - subtle enhancement */}
       <HueSaturation
         hue={0}
-        saturation={0.1}
+        saturation={0.08}
         blendFunction={BlendFunction.NORMAL}
       />
       <BrightnessContrast
         brightness={0.01}
-        contrast={0.03}
+        contrast={0.02}
         blendFunction={BlendFunction.NORMAL}
       />
     </EffectComposer>

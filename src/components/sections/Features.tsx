@@ -71,20 +71,28 @@ export function Features() {
     const ctx = gsap.context(() => {
       // Feature cards staggered animation
       const cards = cardsRef.current?.querySelectorAll(".feature-card");
-      if (cards && !reducedMotion) {
-        gsap.from(cards, {
-          y: 100,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.2,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: cardsRef.current,
-            start: "top 75%",
-            end: "top 40%",
-            toggleActions: "play none none reverse",
-          },
-        });
+      if (cards && cards.length > 0) {
+        if (!reducedMotion) {
+          gsap.fromTo(
+            cards,
+            { y: 50, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.7,
+              stagger: 0.15,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: cardsRef.current,
+                start: "top 85%",
+                toggleActions: "play none none none",
+              },
+            }
+          );
+        } else {
+          // Reduced motion - just show immediately
+          gsap.set(cards, { opacity: 1, y: 0 });
+        }
       }
 
       // Parallax effect for the entire section
@@ -108,7 +116,7 @@ export function Features() {
   return (
     <section
       ref={sectionRef}
-      className="scroll-section relative overflow-hidden"
+      className="scroll-section relative"
       id="features"
       data-section="features"
     >
@@ -123,7 +131,7 @@ export function Features() {
         />
       </div>
 
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="content-overlay mx-auto max-w-7xl px-6 relative z-10">
         {/* Section header */}
         <div className="mb-20 text-center">
           <h2

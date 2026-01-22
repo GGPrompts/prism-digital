@@ -2,12 +2,11 @@
 
 import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Float } from "@react-three/drei";
 import * as THREE from "three";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
 interface ShapeConfig {
-  geometry: "octahedron" | "box" | "icosahedron";
+  geometry: "octahedron" | "tetrahedron" | "dodecahedron";
   position: [number, number, number];
   scale: number;
   color: string;
@@ -24,26 +23,61 @@ interface FloatingShapeProps {
   index: number;
 }
 
-function FloatingShape({ config, mouse, scrollOffset, index }: FloatingShapeProps) {
+function FloatingShape({ config, scrollOffset, index }: FloatingShapeProps) {
   const meshRef = useRef<THREE.Mesh>(null!);
+  const materialRef = useRef<THREE.MeshPhysicalMaterial>(null!);
   const initialPos = useMemo(() => new THREE.Vector3(...config.position), [config.position]);
+  const smoothScroll = useRef(0);
 
-  // Temporarily disabled useFrame for debugging
-  useFrame((state, delta) => {
-    if (!meshRef.current) return;
-    // Just rotate slowly
-    meshRef.current.rotation.x += delta * 0.1;
-    meshRef.current.rotation.y += delta * 0.15;
+  useFrame((state) => {
+    if (!meshRef.current || !materialRef.current) return;
+
+    // Smooth scroll interpolation
+    smoothScroll.current = THREE.MathUtils.lerp(smoothScroll.current, scrollOffset, 0.1);
+    const scroll = smoothScroll.current;
+
+    // Elegant slow rotation
+    const time = state.clock.getElapsedTime();
+    meshRef.current.rotation.x = time * config.rotationSpeed * 0.3;
+    meshRef.current.rotation.y = time * config.rotationSpeed * 0.4;
+
+    // Subtle floating motion
+    const floatY = Math.sin(time * config.floatSpeed + index) * config.floatIntensity * 0.3;
+    const floatX = Math.cos(time * config.floatSpeed * 0.7 + index) * config.floatIntensity * 0.2;
+
+    // Position with floating
+    meshRef.current.position.x = initialPos.x + floatX;
+    meshRef.current.position.y = initialPos.y + floatY;
+    meshRef.current.position.z = initialPos.z;
+
+    // Fade out and drift away on scroll (start fading at 15% scroll, fully gone by 50%)
+    const fadeStart = 0.15;
+    const fadeEnd = 0.5;
+    const fadeProgress = THREE.MathUtils.clamp((scroll - fadeStart) / (fadeEnd - fadeStart), 0, 1);
+
+    // Opacity fade
+    materialRef.current.opacity = THREE.MathUtils.lerp(0.6, 0, fadeProgress);
+
+    // Scale down slightly as fading
+    const targetScale = config.scale * (1 - fadeProgress * 0.3);
+    meshRef.current.scale.setScalar(targetScale);
+
+    // Drift outward as scrolling
+    const driftMultiplier = fadeProgress * 2;
+    meshRef.current.position.x = initialPos.x + floatX + (initialPos.x * driftMultiplier * 0.5);
+    meshRef.current.position.y = initialPos.y + floatY + (fadeProgress * 1.5);
+    meshRef.current.position.z = initialPos.z - (fadeProgress * 3);
   });
 
+  // Use higher detail geometries for smoother shapes
   const geometry = useMemo(() => {
     switch (config.geometry) {
       case "octahedron":
-        return <octahedronGeometry args={[1, 0]} />;
-      case "box":
-        return <boxGeometry args={[1, 1, 1]} />;
-      case "icosahedron":
-        return <icosahedronGeometry args={[1, 0]} />;
+        return <octahedronGeometry args={[1, 1]} />; // detail=1 for smoother
+      case "tetrahedron":
+        return <tetrahedronGeometry args={[1, 1]} />; // matches prism aesthetic
+      case "dodecahedron":
+        return <dodecahedronGeometry args={[1, 1]} />; // elegant 12-sided shape
     }
   }, [config.geometry]);
 
@@ -55,14 +89,20 @@ function FloatingShape({ config, mouse, scrollOffset, index }: FloatingShapeProp
       frustumCulled={false}
     >
       {geometry}
-      <meshStandardMaterial
+      {/* Use MeshPhysicalMaterial for glass-like appearance matching prism */}
+      <meshPhysicalMaterial
+        ref={materialRef}
         color={config.color}
         emissive={config.emissive}
-        emissiveIntensity={0.3}
+        emissiveIntensity={0.15}
         transparent
-        opacity={0.85}
-        roughness={0.3}
-        metalness={0.5}
+        opacity={0.6}
+        roughness={0.15}
+        metalness={0.1}
+        clearcoat={0.8}
+        clearcoatRoughness={0.2}
+        transmission={0.3}
+        thickness={0.5}
         side={THREE.DoubleSide}
       />
     </mesh>
@@ -75,57 +115,62 @@ interface FloatingShapesProps {
   device: DeviceCapabilities;
 }
 
-// Shape configurations - positioned to not obstruct hero text (center area)
+// Shape configurations - positioned around edges, not blocking center prism or text
 const shapeConfigs: ShapeConfig[] = [
+  // Top-right - elegant tetrahedron
   {
-    geometry: "octahedron",
-    position: [0, 0, 0],  // TEST: center position
-    scale: 0.8,
-    color: "#8b5cf6",
+    geometry: "tetrahedron",
+    position: [4.2, 2.2, -2],
+    scale: 0.45,
+    color: "#c4b5fd",
     emissive: "#a855f7",
-    floatSpeed: 1.5,
-    floatIntensity: 0.5,
+    floatSpeed: 1.2,
+    floatIntensity: 0.4,
     rotationSpeed: 0.5,
   },
-  {
-    geometry: "icosahedron",
-    position: [4.5, 1.5, -3],
-    scale: 0.6,
-    color: "#6366f1",
-    emissive: "#818cf8",
-    floatSpeed: 2,
-    floatIntensity: 0.4,
-    rotationSpeed: 0.7,
-  },
-  {
-    geometry: "box",
-    position: [-3.5, -1.8, -1.5],
-    scale: 0.5,
-    color: "#7c3aed",
-    emissive: "#a78bfa",
-    floatSpeed: 1.8,
-    floatIntensity: 0.6,
-    rotationSpeed: 0.4,
-  },
+  // Bottom-left - small octahedron
   {
     geometry: "octahedron",
-    position: [3.8, -1.2, -2.5],
-    scale: 0.55,
-    color: "#8b5cf6",
+    position: [-4.0, -2.0, -1.5],
+    scale: 0.5,
+    color: "#a78bfa",
+    emissive: "#8b5cf6",
+    floatSpeed: 1.5,
+    floatIntensity: 0.5,
+    rotationSpeed: 0.4,
+  },
+  // Top-left corner - dodecahedron
+  {
+    geometry: "dodecahedron",
+    position: [-3.8, 2.5, -3],
+    scale: 0.35,
+    color: "#ddd6fe",
     emissive: "#c084fc",
-    floatSpeed: 1.2,
-    floatIntensity: 0.45,
+    floatSpeed: 1.8,
+    floatIntensity: 0.35,
     rotationSpeed: 0.6,
   },
+  // Bottom-right - tetrahedron
   {
-    geometry: "icosahedron",
-    position: [0.5, 3, -4],
+    geometry: "tetrahedron",
+    position: [3.5, -1.8, -2.5],
     scale: 0.4,
-    color: "#6366f1",
-    emissive: "#a5b4fc",
-    floatSpeed: 2.2,
+    color: "#e9d5ff",
+    emissive: "#a855f7",
+    floatSpeed: 1.3,
+    floatIntensity: 0.45,
+    rotationSpeed: 0.55,
+  },
+  // Far back center-top - small accent
+  {
+    geometry: "octahedron",
+    position: [0.5, 3.2, -5],
+    scale: 0.3,
+    color: "#f5d0fe",
+    emissive: "#d946ef",
+    floatSpeed: 2.0,
     floatIntensity: 0.3,
-    rotationSpeed: 0.8,
+    rotationSpeed: 0.7,
   },
 ];
 

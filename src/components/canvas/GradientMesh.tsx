@@ -31,12 +31,12 @@ export function GradientMesh({
       uTime: { value: 0 },
       uScrollProgress: { value: 0 },
       uResolution: { value: new THREE.Vector2(1, 1) },
-      // Project color palette
-      uColor1: { value: new THREE.Color("#6d28d9") }, // primary-subtle (deep purple)
-      uColor2: { value: new THREE.Color("#3b82f6") }, // accent-blue
-      uColor3: { value: new THREE.Color("#f472b6") }, // accent-pink
-      uColor4: { value: new THREE.Color("#4c1d95") }, // primary-dark
-      uOpacity: { value: device?.isMobile ? 0.25 : 0.35 },
+      // Project color palette - darkened for better contrast with purple shapes
+      uColor1: { value: new THREE.Color("#4c1d95") }, // darker purple
+      uColor2: { value: new THREE.Color("#1e3a5f") }, // darker blue
+      uColor3: { value: new THREE.Color("#831843") }, // darker pink
+      uColor4: { value: new THREE.Color("#2e1065") }, // very dark purple
+      uOpacity: { value: device?.isMobile ? 0.2 : 0.25 }, // reduced opacity
     }),
     [device?.isMobile]
   );

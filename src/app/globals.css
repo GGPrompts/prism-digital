@@ -875,17 +875,18 @@ p {
 
 .hero-headline {
   font-family: var(--font-bebas-neue), Impact, var(--font-display);
+  /* Reduced glow to prevent blur, stronger drop shadow for readability */
   text-shadow:
-    0 0 30px rgba(168, 85, 247, 0.6),
-    0 0 60px rgba(168, 85, 247, 0.4),
-    0 4px 20px rgba(0, 0, 0, 0.9),
-    0 2px 4px rgba(0, 0, 0, 0.8);
+    0 0 20px rgba(168, 85, 247, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.9),
+    0 4px 8px rgba(0, 0, 0, 0.5);
   animation: fadeInUp 0.8s cubic-bezier(0.19, 1, 0.22, 1) 0.1s both;
 }
 
 .hero-subtext {
   font-family: var(--font-inter), 'Helvetica Neue', var(--font-sans);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8), 0 4px 24px rgba(0, 0, 0, 0.6);
+  /* Reduced shadow for sharper text */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.4);
   animation: fadeInUp 0.8s cubic-bezier(0.19, 1, 0.22, 1) 0.3s both;
 }
 

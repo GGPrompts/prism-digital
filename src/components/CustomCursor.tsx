@@ -60,16 +60,29 @@ export function CustomCursor() {
       cursorRef.current.style.transform = `translate(${cursorPos.current.x}px, ${cursorPos.current.y}px)`;
     }
 
+    // Calculate movement delta to detect if mouse is still
+    const dx = mousePos.current.x - cursorPos.current.x;
+    const dy = mousePos.current.y - cursorPos.current.y;
+    const isMoving = Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5;
+
     // Update trail points - shift and decay
     for (let i = trail.current.length - 1; i > 0; i--) {
-      trail.current[i].x = trail.current[i - 1].x;
-      trail.current[i].y = trail.current[i - 1].y;
-      trail.current[i].opacity = trail.current[i - 1].opacity * TRAIL_DECAY;
+      if (isMoving) {
+        // Normal trailing behavior when moving
+        trail.current[i].x = trail.current[i - 1].x;
+        trail.current[i].y = trail.current[i - 1].y;
+        trail.current[i].opacity = trail.current[i - 1].opacity * TRAIL_DECAY;
+      } else {
+        // When still, quickly converge all points to cursor center
+        trail.current[i].x += (cursorPos.current.x - trail.current[i].x) * 0.3;
+        trail.current[i].y += (cursorPos.current.y - trail.current[i].y) * 0.3;
+        trail.current[i].opacity *= TRAIL_DECAY;
+      }
     }
     trail.current[0] = {
       x: cursorPos.current.x,
       y: cursorPos.current.y,
-      opacity: 1,
+      opacity: isMoving ? 1 : trail.current[0].opacity * 0.9,
     };
 
     // Draw trail on canvas
@@ -225,43 +238,49 @@ export function CustomCursor() {
       {/* Main cursor dot */}
       <div
         ref={cursorRef}
-        className="pointer-events-none fixed left-0 top-0 z-[9999]"
+        className="pointer-events-none fixed z-[9999]"
         style={{
+          left: 0,
+          top: 0,
           opacity: isVisible ? 1 : 0,
           transition: "opacity 0.2s ease",
         }}
         aria-hidden="true"
       >
-        {/* Outer glow ring */}
+        {/* Outer glow ring - centered on cursor position */}
         <div
-          className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+          className="absolute rounded-full"
           style={{
             width: isHovering ? 48 : 32,
             height: isHovering ? 48 : 32,
+            left: isHovering ? -24 : -16,
+            top: isHovering ? -24 : -16,
             background:
               "radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, rgba(34, 211, 238, 0.1) 50%, transparent 70%)",
             boxShadow: isHovering
               ? "0 0 30px rgba(168, 85, 247, 0.5), 0 0 60px rgba(34, 211, 238, 0.3)"
               : "0 0 20px rgba(168, 85, 247, 0.4), 0 0 40px rgba(34, 211, 238, 0.2)",
-            transform: `translate(-50%, -50%) scale(${isClicking ? 0.8 : 1})`,
+            transform: `scale(${isClicking ? 0.8 : 1})`,
             transition:
-              "width 0.2s ease-out, height 0.2s ease-out, box-shadow 0.2s ease-out, transform 0.1s ease-out",
+              "width 0.2s ease-out, height 0.2s ease-out, left 0.2s ease-out, top 0.2s ease-out, box-shadow 0.2s ease-out, transform 0.1s ease-out",
           }}
         />
 
-        {/* Inner dot */}
+        {/* Inner dot - centered on cursor position */}
         <div
-          className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+          className="absolute rounded-full"
           style={{
             width: isHovering ? 10 : 6,
             height: isHovering ? 10 : 6,
+            left: isHovering ? -5 : -3,
+            top: isHovering ? -5 : -3,
             background:
               "linear-gradient(135deg, rgba(168, 85, 247, 1) 0%, rgba(192, 132, 252, 1) 100%)",
             boxShadow:
               "0 0 10px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.4)",
-            transform: `translate(-50%, -50%) scale(${isClicking ? 1.2 : 1})`,
+            transform: `scale(${isClicking ? 1.2 : 1})`,
             transition:
-              "width 0.15s ease-out, height 0.15s ease-out, transform 0.1s ease-out",
+              "width 0.15s ease-out, height 0.15s ease-out, left 0.15s ease-out, top 0.15s ease-out, transform 0.1s ease-out",
           }}
         />
       </div>
