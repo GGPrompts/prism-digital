@@ -28,48 +28,12 @@ function FloatingShape({ config, mouse, scrollOffset, index }: FloatingShapeProp
   const meshRef = useRef<THREE.Mesh>(null!);
   const initialPos = useMemo(() => new THREE.Vector3(...config.position), [config.position]);
 
+  // Temporarily disabled useFrame for debugging
   useFrame((state, delta) => {
     if (!meshRef.current) return;
-
-    // Normalize scroll to guard against tiny jitters or non-finite values
-    const safeScroll = Number.isFinite(scrollOffset) ? scrollOffset : 0;
-    // Some browsers can report tiny non-zero scroll offsets on initial load.
-    // Treat very small values as 0 so shapes don't "disappear" immediately.
-    const effectiveScroll = safeScroll < 0.02 ? 0 : THREE.MathUtils.clamp(safeScroll, 0, 1);
-
-    // Smooth rotation
-    meshRef.current.rotation.x += delta * config.rotationSpeed * 0.3;
-    meshRef.current.rotation.y += delta * config.rotationSpeed * 0.5;
-
-    // Mouse parallax - shapes move opposite to mouse for depth effect
-    const parallaxStrength = 0.3 + index * 0.1;
-    const targetX = initialPos.x - mouse.x * parallaxStrength;
-    const targetY = initialPos.y - mouse.y * parallaxStrength * 0.5;
-
-    // Lerp position for smooth movement
-    meshRef.current.position.x = THREE.MathUtils.lerp(
-      meshRef.current.position.x,
-      targetX,
-      0.05
-    );
-    meshRef.current.position.y = THREE.MathUtils.lerp(
-      meshRef.current.position.y,
-      targetY,
-      0.05
-    );
-
-    // Scroll-based z movement - shapes recede as user scrolls
-    const scrollZ = initialPos.z - effectiveScroll * 1.25;
-    meshRef.current.position.z = THREE.MathUtils.lerp(
-      meshRef.current.position.z,
-      scrollZ,
-      0.1
-    );
-
-    // Fade out shapes as user scrolls
-    const material = meshRef.current.material as THREE.MeshPhysicalMaterial;
-    material.opacity = THREE.MathUtils.lerp(0.65, 0.35, effectiveScroll);
-    material.emissiveIntensity = THREE.MathUtils.lerp(0.9, 0.45, effectiveScroll);
+    // Just rotate slowly
+    meshRef.current.rotation.x += delta * 0.1;
+    meshRef.current.rotation.y += delta * 0.15;
   });
 
   const geometry = useMemo(() => {
@@ -84,33 +48,21 @@ function FloatingShape({ config, mouse, scrollOffset, index }: FloatingShapeProp
   }, [config.geometry]);
 
   return (
-    <Float
-      speed={config.floatSpeed}
-      rotationIntensity={0.2}
-      floatIntensity={config.floatIntensity}
+    <mesh
+      ref={meshRef}
+      position={config.position}
+      scale={config.scale}
+      frustumCulled={false}
     >
-      <mesh
-        ref={meshRef}
-        position={config.position}
-        scale={config.scale}
-        frustumCulled={false}
-      >
-        {geometry}
-        <meshPhysicalMaterial
-          color={config.color}
-          emissive={config.emissive}
-          emissiveIntensity={0.8}
-          transparent
-          opacity={0.6}
-          depthWrite={false}
-          roughness={0.2}
-          metalness={0.8}
-          clearcoat={1}
-          clearcoatRoughness={0.1}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-    </Float>
+      {geometry}
+      <meshBasicMaterial
+        color={config.emissive}
+        transparent
+        opacity={0.6}
+        depthWrite={false}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
   );
 }
 
@@ -124,7 +76,7 @@ interface FloatingShapesProps {
 const shapeConfigs: ShapeConfig[] = [
   {
     geometry: "octahedron",
-    position: [-4, 2, -2],
+    position: [0, 0, 0],  // TEST: center position
     scale: 0.8,
     color: "#8b5cf6",
     emissive: "#a855f7",
@@ -175,6 +127,7 @@ const shapeConfigs: ShapeConfig[] = [
 ];
 
 export function FloatingShapes({ mouse, scrollOffset, device }: FloatingShapesProps) {
+
   // Reduce shape count on mobile devices
   const visibleShapes = useMemo(() => {
     if (device.isMobile) {

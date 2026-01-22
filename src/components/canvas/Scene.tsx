@@ -49,26 +49,18 @@ export function Scene() {
   return (
     <>
       {/* Subtle ambient lighting */}
-      <ambientLight ref={lightRef} intensity={0.2} />
+      <ambientLight ref={lightRef} intensity={0.5} />
 
-      {/* Environment for atmosphere */}
-      <group ref={envRef}>
-        <Environment preset="night" />
-      </group>
-
-      {/* Prism centerpiece - brand focal point */}
-      <PrismCenterpiece
-        scrollProgress={scrollProgress}
-        device={device}
-      />
-
-      {/* Hero particle system with interactions */}
+      {/* Hero section 3D elements */}
       <Hero3D scrollProgress={scrollProgress} device={device} />
 
-      {/* Features section morphing particles */}
+      {/* Glass prism centerpiece */}
+      <PrismCenterpiece scrollProgress={scrollProgress} device={device} />
+
+      {/* Features section particles */}
       <FeaturesParticles scrollProgress={scrollProgress} device={device} />
 
-      {/* Post-processing effects - disabled on low-end devices and most mobile */}
+      {/* Post-processing effects - only on capable devices */}
       {enableEffects && <Effects device={device} />}
     </>
   );

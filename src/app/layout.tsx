@@ -124,7 +124,7 @@ export default function RootLayout({
         <JsonLd />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${inter.variable} ${jetbrainsMono.variable} ${orbitron.variable} bg-background text-foreground antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${inter.variable} ${jetbrainsMono.variable} ${orbitron.variable} text-foreground antialiased`}
       >
         <ThemeProvider
           attribute="class"

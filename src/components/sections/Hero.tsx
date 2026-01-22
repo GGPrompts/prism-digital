@@ -85,8 +85,9 @@ export function Hero() {
       id="hero"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
+      {/* Gradient overlay - transparent to let 3D canvas show through */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-radial" />
+        <div className="absolute inset-0 bg-gradient-radial opacity-40" />
       </div>
 
       <div className="content-overlay relative z-10 w-full px-6 py-20 md:px-12 lg:px-20">

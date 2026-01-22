@@ -1,23 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useProgress } from "@react-three/drei";
 
 export function Loader() {
-  const { progress, active } = useProgress();
+  const { progress, active, loaded, total } = useProgress();
   const [isExiting, setIsExiting] = useState(false);
+  const hasStartedLoading = useRef(false);
+
+  // Track if we've ever had items to load
+  useEffect(() => {
+    if (total > 0) {
+      hasStartedLoading.current = true;
+    }
+  }, [total]);
 
   useEffect(() => {
-    // When loading completes, trigger exit animation
-    if (!active && progress === 100) {
+    // Case 1: Normal loading complete (had items, now done)
+    const normalComplete = !active && progress === 100 && hasStartedLoading.current;
+
+    // Case 2: No items to load at all - skip loader immediately
+    // When total is 0 and not active, there's nothing to load
+    const nothingToLoad = !active && total === 0 && loaded === 0;
+
+    if (normalComplete || nothingToLoad) {
+      const delay = nothingToLoad ? 100 : 300; // Shorter delay when nothing to load
       setTimeout(() => {
         setIsExiting(true);
-      }, 300);
+      }, delay);
     }
-  }, [active, progress]);
+  }, [active, progress, loaded, total]);
 
   // Don't render if exiting is complete
-  if (isExiting && progress === 100) {
+  if (isExiting) {
     return null;
   }
 

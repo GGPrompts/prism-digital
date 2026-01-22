@@ -38,3 +38,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# bd worktree
+.worktrees/PD-m0n/
+# bd worktree
+.worktrees/PD-9ki/
+# bd worktree
+.worktrees/PD-9ei/

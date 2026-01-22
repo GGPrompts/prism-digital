@@ -6,12 +6,12 @@ import { Footer } from '@/components/sections/Footer'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
+    <div className="min-h-screen">
+      {/* Hero Section - transparent background to show 3D canvas */}
       <Hero />
 
       {/* Features Section - placeholder */}
-      <section id="features" className="scroll-section">
+      <section id="features" className="scroll-section bg-background">
         <div className="mx-auto max-w-6xl">
           <h2 className="mb-12 text-center">What We Do</h2>
 

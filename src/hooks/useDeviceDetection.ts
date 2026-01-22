@@ -38,6 +38,7 @@ export function useDeviceDetection(): DeviceCapabilities {
     gpu: "high",
   });
 
+
   useEffect(() => {
     const detectCapabilities = () => {
       // Viewport detection

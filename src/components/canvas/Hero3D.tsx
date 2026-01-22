@@ -98,22 +98,24 @@ export function Hero3D({ scrollProgress: externalScrollProgress = 0, device }: H
   });
 
   return (
-    <group ref={cameraGroupRef}>
-      <group ref={particlesGroupRef}>
-        <Particles
-          count={particleCount}
-          mouse={mouseRef.current}
-          scrollOffset={scrollOffsetRef.current}
-          device={device}
-        />
+    <>
+      <group ref={cameraGroupRef}>
+        <group ref={particlesGroupRef}>
+          <Particles
+            count={particleCount}
+            mouse={mouseRef.current}
+            scrollOffset={scrollOffsetRef.current}
+            device={device}
+          />
+        </group>
       </group>
 
-      {/* Floating geometric shapes with mouse parallax */}
+      {/* Floating geometric shapes with mouse parallax - outside camera group */}
       <FloatingShapes
         mouse={mouseRef.current}
         scrollOffset={scrollOffsetRef.current}
         device={device}
       />
-    </group>
+    </>
   );
 }
