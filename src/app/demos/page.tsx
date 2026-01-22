@@ -77,7 +77,7 @@ const demos: Demo[] = [
       "Collection of custom GLSL shaders showcasing visual effects and techniques",
     icon: Palette,
     tags: ["glsl", "shader", "effects"],
-    status: "coming-soon",
+    status: "live",
   },
   {
     slug: "dataviz",
