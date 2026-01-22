@@ -74,12 +74,19 @@ export function Header() {
 
   const navLinks = [
     { href: "#features", label: "Features" },
+    { href: "/demos", label: "Demos" },
     { href: "#about", label: "About" },
     { href: "#contact", label: "Contact" },
   ];
 
   // Smooth scroll handler for navigation links
   const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // For page routes (not anchors), let the browser handle navigation
+    if (!href.startsWith('#')) {
+      setMobileMenuOpen(false);
+      return;
+    }
+
     e.preventDefault();
     const targetId = href.replace('#', '');
     const element = document.getElementById(targetId);
