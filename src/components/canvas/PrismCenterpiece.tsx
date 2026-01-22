@@ -2,7 +2,7 @@
 
 import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { MeshTransmissionMaterial, useEnvironment } from "@react-three/drei";
+import { useEnvironment } from "@react-three/drei";
 import * as THREE from "three";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
@@ -124,44 +124,7 @@ export function PrismCenterpiece({
     });
   });
 
-  // Pre-allocate color to avoid GC in render
-  const backgroundColor = useMemo(() => new THREE.Color("#0a0a0a"), []);
 
-  // Adaptive material settings based on device capability
-  const materialSettings = useMemo(() => {
-    if (device?.gpu === "low") {
-      return {
-        samples: 4,
-        resolution: 256,
-        transmission: 0.9,
-        thickness: 1,
-        chromaticAberration: 0.3,
-        anisotropicBlur: 0.2,
-      };
-    }
-    if (device?.gpu === "medium" || device?.isMobile) {
-      return {
-        samples: 8,
-        resolution: 512,
-        transmission: 0.95,
-        thickness: 1.5,
-        chromaticAberration: 0.5,
-        anisotropicBlur: 0.3,
-      };
-    }
-    // High-end settings
-    return {
-      samples: 16,
-      resolution: 1024,
-      transmission: 1,
-      thickness: 2,
-      chromaticAberration: 0.8,
-      anisotropicBlur: 0.5,
-    };
-  }, [device]);
-
-  // Use a simpler material when WebGL2 is unavailable or GPU is low tier
-  const supportsTransmission = device?.hasWebGL2 !== false && device?.gpu !== "low";
 
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
@@ -179,39 +142,22 @@ export function PrismCenterpiece({
         receiveShadow
         frustumCulled={false}
       >
-        {supportsTransmission ? (
-          <MeshTransmissionMaterial
-            envMap={envMap}
-            background={backgroundColor}
-            backside={true}
-            samples={materialSettings.samples}
-            resolution={materialSettings.resolution}
-            transmission={materialSettings.transmission}
-            roughness={0.05}
-            thickness={materialSettings.thickness}
-            ior={2.4}
-            chromaticAberration={materialSettings.chromaticAberration}
-            anisotropicBlur={materialSettings.anisotropicBlur}
-            distortion={0.2}
-            distortionScale={0.3}
-            temporalDistortion={0.1}
-            clearcoat={1}
-            attenuationDistance={0.5}
-            attenuationColor="#9333ea"
-            color="#e9d5ff"
-          />
-        ) : (
-          <meshPhysicalMaterial
-            color="#e9d5ff"
-            emissive="#a855f7"
-            emissiveIntensity={0.25}
-            roughness={0.2}
-            metalness={0.6}
-            clearcoat={1}
-            transparent
-            opacity={0.85}
-          />
-        )}
+        {/* Use meshPhysicalMaterial for cleaner glass without FBO artifacts */}
+        <meshPhysicalMaterial
+          envMap={envMap}
+          color="#e9d5ff"
+          emissive="#a855f7"
+          emissiveIntensity={0.3}
+          roughness={0.05}
+          metalness={0.1}
+          clearcoat={1}
+          clearcoatRoughness={0.1}
+          transmission={0.9}
+          thickness={1.5}
+          ior={1.5}
+          transparent
+          opacity={0.95}
+        />
       </mesh>
 
       {/* Inner glow mesh for enhanced effect - very subtle */}
