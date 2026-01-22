@@ -76,7 +76,7 @@ export function Header() {
     { href: "#features", label: "Features" },
     { href: "/demos", label: "Demos" },
     { href: "#about", label: "About" },
-    { href: "#contact", label: "Contact" },
+    { href: "/contact", label: "Contact" },
   ];
 
   // Smooth scroll handler for navigation links
