@@ -59,7 +59,7 @@ const demos: Demo[] = [
       "Immersive scroll-driven storytelling with animated 3D scenes and transitions",
     icon: ScrollText,
     tags: ["scroll", "animation", "storytelling"],
-    status: "coming-soon",
+    status: "live",
   },
   {
     slug: "physics",
