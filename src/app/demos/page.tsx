@@ -50,7 +50,7 @@ const demos: Demo[] = [
       "Text and shapes that dissolve and reform using GPU-accelerated particles",
     icon: Sparkles,
     tags: ["particles", "shader", "gsap"],
-    status: "coming-soon",
+    status: "live",
   },
   {
     slug: "journey",
