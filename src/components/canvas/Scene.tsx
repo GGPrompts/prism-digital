@@ -8,6 +8,7 @@ import { Hero3D } from "./Hero3D";
 import { PrismCenterpiece } from "./PrismCenterpiece";
 import { FeaturesParticles } from "./FeaturesParticles";
 import { Effects } from "./Effects";
+import { GradientMesh } from "./GradientMesh";
 import { useGSAPScroll } from "@/hooks/useGSAPScroll";
 import { useDeviceDetection, shouldEnableEffects } from "@/hooks/useDeviceDetection";
 
@@ -48,6 +49,9 @@ export function Scene() {
 
   return (
     <>
+      {/* Animated gradient mesh background - positioned behind everything */}
+      <GradientMesh scrollProgress={scrollProgress} device={device} />
+
       {/* Subtle ambient lighting */}
       <ambientLight ref={lightRef} intensity={0.5} />
 
