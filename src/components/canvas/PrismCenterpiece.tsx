@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useEnvironment } from "@react-three/drei";
+import { useEnvironment, useCursor } from "@react-three/drei";
 import * as THREE from "three";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
@@ -28,6 +28,19 @@ export function PrismCenterpiece({
     0,
     1
   );
+
+  // Hover state for interactivity
+  const [hovered, setHovered] = useState(false);
+  const smoothHover = useRef(0);
+  const baseEmissiveIntensity = 0.3;
+  const hoverEmissiveIntensity = 0.6;
+
+  // Change cursor to pointer when hovering
+  useCursor(hovered);
+
+  // Handlers for pointer events
+  const onPointerOver = useCallback(() => setHovered(true), []);
+  const onPointerOut = useCallback(() => setHovered(false), []);
 
   // Load environment for reflections
   const envMap = useEnvironment({ preset: "night" });
@@ -63,6 +76,21 @@ export function PrismCenterpiece({
     if (!meshRef.current || !groupRef.current) return;
 
     const time = state.clock.getElapsedTime();
+
+    // Smooth hover interpolation (lerp factor 0.1 for smooth transitions)
+    const targetHover = hovered ? 1 : 0;
+    smoothHover.current = THREE.MathUtils.lerp(smoothHover.current, targetHover, 0.1);
+    const hoverProgress = smoothHover.current;
+
+    // Apply hover emissive glow to main prism mesh
+    const mat = meshRef.current.material as THREE.MeshPhysicalMaterial;
+    if (mat && 'emissiveIntensity' in mat) {
+      mat.emissiveIntensity = THREE.MathUtils.lerp(
+        baseEmissiveIntensity,
+        hoverEmissiveIntensity,
+        hoverProgress
+      );
+    }
 
     // Slow, elegant rotation
     const rotationSpeed = device?.isMobile ? 0.15 : 0.2;
@@ -116,9 +144,9 @@ export function PrismCenterpiece({
     // Fade opacity via material (we'll need to access children)
     groupRef.current.traverse((child) => {
       if (child instanceof THREE.Mesh && child.material) {
-        const mat = child.material as THREE.Material;
-        if ('opacity' in mat) {
-          (mat as THREE.MeshPhysicalMaterial).opacity = 1 - fadeProgress;
+        const childMat = child.material as THREE.Material;
+        if ('opacity' in childMat) {
+          (childMat as THREE.MeshPhysicalMaterial).opacity = 1 - fadeProgress;
         }
       }
     });
@@ -141,13 +169,15 @@ export function PrismCenterpiece({
         castShadow
         receiveShadow
         frustumCulled={false}
+        onPointerOver={onPointerOver}
+        onPointerOut={onPointerOut}
       >
         {/* Use meshPhysicalMaterial for cleaner glass without FBO artifacts */}
         <meshPhysicalMaterial
           envMap={envMap}
           color="#e9d5ff"
           emissive="#a855f7"
-          emissiveIntensity={0.3}
+          emissiveIntensity={baseEmissiveIntensity}
           roughness={0.05}
           metalness={0.1}
           clearcoat={1}

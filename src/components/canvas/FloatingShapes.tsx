@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
+import { useCursor } from "@react-three/drei";
 import * as THREE from "three";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
@@ -29,12 +30,38 @@ function FloatingShape({ config, scrollOffset, index }: FloatingShapeProps) {
   const initialPos = useMemo(() => new THREE.Vector3(...config.position), [config.position]);
   const smoothScroll = useRef(0);
 
+  // Hover state for raycasting
+  const [hovered, setHovered] = useState(false);
+  const smoothHover = useRef(0);
+  const baseEmissiveIntensity = 0.15;
+  const hoverEmissiveIntensity = 0.5;
+  const hoverScaleMultiplier = 1.12;
+
+  // Change cursor to pointer when hovering
+  useCursor(hovered);
+
+  // Handlers for pointer events
+  const onPointerOver = useCallback(() => setHovered(true), []);
+  const onPointerOut = useCallback(() => setHovered(false), []);
+
   useFrame((state) => {
     if (!meshRef.current || !materialRef.current) return;
 
     // Smooth scroll interpolation
     smoothScroll.current = THREE.MathUtils.lerp(smoothScroll.current, scrollOffset, 0.1);
     const scroll = smoothScroll.current;
+
+    // Smooth hover interpolation (lerp factor 0.12 for smooth transitions)
+    const targetHover = hovered ? 1 : 0;
+    smoothHover.current = THREE.MathUtils.lerp(smoothHover.current, targetHover, 0.12);
+    const hoverProgress = smoothHover.current;
+
+    // Apply hover emissive glow
+    materialRef.current.emissiveIntensity = THREE.MathUtils.lerp(
+      baseEmissiveIntensity,
+      hoverEmissiveIntensity,
+      hoverProgress
+    );
 
     // Elegant slow rotation
     const time = state.clock.getElapsedTime();
@@ -58,8 +85,9 @@ function FloatingShape({ config, scrollOffset, index }: FloatingShapeProps) {
     // Opacity fade
     materialRef.current.opacity = THREE.MathUtils.lerp(0.6, 0, fadeProgress);
 
-    // Scale down slightly as fading
-    const targetScale = config.scale * (1 - fadeProgress * 0.3);
+    // Scale with hover effect (1.12x on hover) - applied before fade scaling
+    const hoverScale = THREE.MathUtils.lerp(1, hoverScaleMultiplier, hoverProgress);
+    const targetScale = config.scale * hoverScale * (1 - fadeProgress * 0.3);
     meshRef.current.scale.setScalar(targetScale);
 
     // Drift outward as scrolling
@@ -87,6 +115,8 @@ function FloatingShape({ config, scrollOffset, index }: FloatingShapeProps) {
       position={config.position}
       scale={config.scale}
       frustumCulled={false}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut}
     >
       {geometry}
       {/* Use MeshPhysicalMaterial for glass-like appearance matching prism */}
@@ -94,7 +124,7 @@ function FloatingShape({ config, scrollOffset, index }: FloatingShapeProps) {
         ref={materialRef}
         color={config.color}
         emissive={config.emissive}
-        emissiveIntensity={0.15}
+        emissiveIntensity={baseEmissiveIntensity}
         transparent
         opacity={0.6}
         roughness={0.15}
