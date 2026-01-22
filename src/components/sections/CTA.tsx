@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { MagneticButton } from '@/components/ui/MagneticButton'
 
 function mulberry32(seed: number) {
   return function next() {
@@ -158,38 +159,31 @@ export function CTA() {
             transitionDelay: '500ms'
           }}
         >
-          <button
-            className="group relative overflow-hidden rounded-2xl px-12 py-6 text-xl font-bold text-white shadow-2xl transition-all duration-500 hover:scale-105 hover:shadow-purple-500/50 md:px-16 md:py-8 md:text-2xl"
+          <MagneticButton
+            className="group relative overflow-hidden rounded-2xl px-12 py-6 text-xl font-bold text-white shadow-2xl transition-all duration-500 hover:scale-105 hover:shadow-purple-500/50 md:px-16 md:py-8 md:text-2xl magnetic-glow-cta"
+            magneticDistance={120}
+            maxOffset={18}
+            strength={0.4}
             style={{
-              background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #c084fc 100%)',
-              boxShadow: '0 10px 40px rgba(168, 85, 247, 0.4), 0 0 60px rgba(168, 85, 247, 0.2)'
+              background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #c084fc 100%)'
             }}
+            contentClassName="relative z-10 flex items-center gap-3"
           >
-            <span className="relative z-10 flex items-center gap-3">
-              See Our Work
-              <svg
-                className="h-6 w-6 transition-transform duration-300 group-hover:translate-x-2 md:h-8 md:w-8"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-            </span>
-
-            {/* Animated shine effect */}
-            <div
-              className="absolute inset-0 -translate-x-full transform transition-transform duration-1000 group-hover:translate-x-full"
-              style={{
-                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)'
-              }}
-            />
-          </button>
+            See Our Work
+            <svg
+              className="h-6 w-6 transition-transform duration-300 group-hover:translate-x-2 md:h-8 md:w-8"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
+            </svg>
+          </MagneticButton>
         </div>
 
         {/* Optional Email Capture Form */}
