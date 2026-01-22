@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { Particles } from "./Particles";
@@ -8,13 +8,65 @@ import { FloatingShapes } from "./FloatingShapes";
 import { getOptimalParticleCount } from "@/hooks/useDeviceDetection";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
+// Camera keyframes for each section
+// Each keyframe defines: position (x, y, z), rotation (x, y, z)
+interface CameraKeyframe {
+  position: THREE.Vector3;
+  rotation: THREE.Euler;
+}
+
+const CAMERA_KEYFRAMES: Record<string, CameraKeyframe> = {
+  hero: {
+    position: new THREE.Vector3(0, 0, 0),
+    rotation: new THREE.Euler(0, 0, 0),
+  },
+  features: {
+    position: new THREE.Vector3(0, 0.5, 3),
+    rotation: new THREE.Euler(0.1, 0, 0),
+  },
+  process: {
+    position: new THREE.Vector3(0, 1, 5),
+    rotation: new THREE.Euler(0.2, 0, 0),
+  },
+  testimonials: {
+    position: new THREE.Vector3(0, 0.3, 2),
+    rotation: new THREE.Euler(0.05, 0, 0),
+  },
+};
+
+// Section order for interpolation
+const SECTION_ORDER = ["hero", "features", "process", "testimonials"];
+
+// Check for reduced motion preference
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 interface Hero3DProps {
   scrollProgress?: number;
+  section?: string;
   device: DeviceCapabilities;
 }
 
-export function Hero3D({ scrollProgress: externalScrollProgress = 0, device }: Hero3DProps) {
+export function Hero3D({
+  scrollProgress: externalScrollProgress = 0,
+  section = "hero",
+  device,
+}: Hero3DProps) {
   const { pointer } = useThree();
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  // Check reduced motion preference on mount and when it changes
+  useEffect(() => {
+    setReducedMotion(prefersReducedMotion());
+
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const handleChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
   const safeScrollTarget = THREE.MathUtils.clamp(
     Number.isFinite(externalScrollProgress) ? externalScrollProgress : 0,
     0,
@@ -38,6 +90,16 @@ export function Hero3D({ scrollProgress: externalScrollProgress = 0, device }: H
   // Smoothed scroll value for buttery transitions
   const smoothScrollRef = useRef(0);
 
+  // Pre-allocated vectors for camera interpolation (avoid GC in useFrame)
+  const targetCameraPosition = useRef(new THREE.Vector3());
+  const targetCameraRotation = useRef(new THREE.Euler());
+  const currentSectionRef = useRef(section);
+
+  // Update current section ref
+  useEffect(() => {
+    currentSectionRef.current = section;
+  }, [section]);
+
   useFrame((state) => {
     // Smooth mouse following (lerp) - reduce on mobile/touch devices
     targetMouseRef.current.set(pointer.x, pointer.y);
@@ -57,15 +119,87 @@ export function Hero3D({ scrollProgress: externalScrollProgress = 0, device }: H
     const scrollValue = smoothScrollRef.current;
     scrollOffsetRef.current = scrollValue;
 
-    // Camera movement based on scroll
+    // Camera movement based on section keyframes
     if (cameraGroupRef.current) {
-      // Move camera back as user scrolls (reduce movement on mobile)
-      const zMultiplier = device.isMobile ? 2 : 3;
-      cameraGroupRef.current.position.z = scrollValue * (zMultiplier + 2);
+      // If reduced motion is preferred, use minimal camera movement
+      if (reducedMotion) {
+        // Just a subtle z-movement with no rotation
+        const minimalZ = scrollValue * 1.5;
+        cameraGroupRef.current.position.set(0, 0, minimalZ);
+        cameraGroupRef.current.rotation.set(0, 0, 0);
+      } else {
+        // Get current and next section for interpolation
+        const currentSection = currentSectionRef.current;
+        const sectionIndex = SECTION_ORDER.indexOf(currentSection);
+        const nextSectionIndex = Math.min(sectionIndex + 1, SECTION_ORDER.length - 1);
 
-      // Slight rotation for depth (reduce on mobile)
-      const rotationMultiplier = device.isMobile ? 0.15 : 0.3;
-      cameraGroupRef.current.rotation.x = scrollValue * rotationMultiplier;
+        const currentKeyframe = CAMERA_KEYFRAMES[currentSection] || CAMERA_KEYFRAMES.hero;
+        const nextKeyframe =
+          CAMERA_KEYFRAMES[SECTION_ORDER[nextSectionIndex]] || currentKeyframe;
+
+        // Calculate progress within current section (0-1)
+        // Use scroll progress to interpolate between sections
+        const sectionProgress = (scrollValue * (SECTION_ORDER.length - 1)) % 1;
+
+        // Determine which keyframes to blend based on scroll position
+        // Smoothly transition from current to next section
+        const fromKeyframe = currentKeyframe;
+        const toKeyframe =
+          scrollValue > (sectionIndex + 0.5) / (SECTION_ORDER.length - 1)
+            ? nextKeyframe
+            : currentKeyframe;
+
+        // Apply device-specific multipliers
+        const positionMultiplier = device.isMobile ? 0.6 : 1;
+        const rotationMultiplier = device.isMobile ? 0.5 : 1;
+
+        // Interpolate position
+        targetCameraPosition.current.lerpVectors(
+          fromKeyframe.position,
+          toKeyframe.position,
+          sectionProgress
+        );
+
+        // Scale by device multiplier
+        targetCameraPosition.current.multiplyScalar(positionMultiplier);
+
+        // Interpolate rotation
+        targetCameraRotation.current.set(
+          THREE.MathUtils.lerp(
+            fromKeyframe.rotation.x,
+            toKeyframe.rotation.x,
+            sectionProgress
+          ) * rotationMultiplier,
+          THREE.MathUtils.lerp(
+            fromKeyframe.rotation.y,
+            toKeyframe.rotation.y,
+            sectionProgress
+          ) * rotationMultiplier,
+          THREE.MathUtils.lerp(
+            fromKeyframe.rotation.z,
+            toKeyframe.rotation.z,
+            sectionProgress
+          ) * rotationMultiplier
+        );
+
+        // Smoothly lerp camera to target position/rotation
+        cameraGroupRef.current.position.lerp(targetCameraPosition.current, 0.08);
+        cameraGroupRef.current.rotation.x = THREE.MathUtils.lerp(
+          cameraGroupRef.current.rotation.x,
+          targetCameraRotation.current.x,
+          0.08
+        );
+        cameraGroupRef.current.rotation.y = THREE.MathUtils.lerp(
+          cameraGroupRef.current.rotation.y,
+          targetCameraRotation.current.y,
+          0.08
+        );
+        cameraGroupRef.current.rotation.z = THREE.MathUtils.lerp(
+          cameraGroupRef.current.rotation.z,
+          targetCameraRotation.current.z,
+          0.08
+        );
+      }
     }
 
     // Particles group transformations

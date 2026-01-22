@@ -1,6 +1,5 @@
 "use client";
 
-import { Environment } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
@@ -56,7 +55,7 @@ export function Scene() {
       <ambientLight ref={lightRef} intensity={0.5} />
 
       {/* Hero section 3D elements */}
-      <Hero3D scrollProgress={scrollProgress} device={device} />
+      <Hero3D scrollProgress={scrollProgress} section={scrollState.section} device={device} />
 
       {/* Glass prism centerpiece */}
       <PrismCenterpiece scrollProgress={scrollProgress} device={device} />
