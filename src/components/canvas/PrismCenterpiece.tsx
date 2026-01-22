@@ -197,25 +197,27 @@ export function PrismCenterpiece({
         />
       </mesh>
 
-      {/* Inner glow mesh for enhanced effect */}
-      <mesh position={[0, 0, -0.75]} scale={0.7} frustumCulled={false}>
-        <sphereGeometry args={[0.35, 24, 24]} />
+      {/* Inner glow mesh for enhanced effect - positioned further back inside prism */}
+      <mesh position={[0, 0, -0.9]} scale={0.5} frustumCulled={false}>
+        <sphereGeometry args={[0.3, 24, 24]} />
         <meshBasicMaterial
           color="#d946ef"
           transparent
-          opacity={0.08}
+          opacity={0.06}
           toneMapped={false}
+          depthWrite={false}
         />
       </mesh>
 
-      {/* Secondary outer glow for depth */}
-      <mesh position={[0, 0, -0.75]} scale={0.9} frustumCulled={false}>
-        <sphereGeometry args={[0.5, 16, 16]} />
+      {/* Secondary outer glow for depth - positioned inside prism volume */}
+      <mesh position={[0, 0, -0.85]} scale={0.6} frustumCulled={false}>
+        <sphereGeometry args={[0.4, 16, 16]} />
         <meshBasicMaterial
           color="#c084fc"
           transparent
-          opacity={0.04}
+          opacity={0.03}
           toneMapped={false}
+          depthWrite={false}
         />
       </mesh>
     </group>

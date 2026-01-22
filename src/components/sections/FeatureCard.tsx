@@ -27,7 +27,7 @@ export function FeatureCard({
   return (
     <div
       ref={cardRef}
-      className="feature-card glass-card group relative overflow-hidden p-8"
+      className="feature-card glass-card group relative overflow-hidden p-8 text-foreground"
       style={{
         animationDelay: `${index * 150}ms`,
       }}

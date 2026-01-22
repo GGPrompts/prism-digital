@@ -63,10 +63,10 @@ export default function ParticlesDemoPage() {
     <>
       <Header />
 
-      {/* Background gradient */}
-      <div className="fixed inset-0 -z-10 bg-background">
+      {/* Background gradient - transparent to allow 3D content to show through */}
+      <div className="fixed inset-0 -z-10 pointer-events-none">
         <div
-          className="absolute left-1/2 top-1/3 h-[1000px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 blur-3xl"
+          className="absolute left-1/2 top-1/3 h-[1000px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10 blur-3xl dark:opacity-8"
           style={{
             background:
               "radial-gradient(circle, var(--primary) 0%, transparent 70%)",

@@ -105,7 +105,7 @@ function DemoCard({ demo, index }: { demo: Demo; index: number }) {
 
   const cardContent = (
     <div
-      className="demo-card glass-card group relative overflow-hidden p-8"
+      className="demo-card glass-card group relative overflow-hidden p-8 text-foreground"
       style={{
         animationDelay: `${index * 100}ms`,
       }}
@@ -153,7 +153,7 @@ function DemoCard({ demo, index }: { demo: Demo; index: number }) {
           {demo.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-white/5 px-2.5 py-1 text-xs font-medium text-foreground-muted transition-colors group-hover:bg-primary/10 group-hover:text-primary"
+              className="rounded-full bg-primary/10 dark:bg-white/5 px-2.5 py-1 text-xs font-medium text-foreground-muted transition-colors group-hover:bg-primary/20 group-hover:text-primary"
             >
               {tag}
             </span>
@@ -250,17 +250,17 @@ export default function DemosPage() {
     <>
       <Header />
 
-      {/* Background gradient */}
-      <div className="fixed inset-0 -z-10 bg-background">
+      {/* Background gradient - transparent to show through to page background */}
+      <div className="fixed inset-0 -z-10 bg-background/80 dark:bg-background/60">
         <div
-          className="absolute left-1/2 top-1/3 h-[1000px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20 blur-3xl"
+          className="absolute left-1/2 top-1/3 h-[1000px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 dark:opacity-20 blur-3xl"
           style={{
             background:
               "radial-gradient(circle, var(--primary) 0%, transparent 70%)",
           }}
         />
         <div
-          className="absolute bottom-0 right-0 h-[600px] w-[600px] rounded-full opacity-10 blur-3xl"
+          className="absolute bottom-0 right-0 h-[600px] w-[600px] rounded-full opacity-8 dark:opacity-10 blur-3xl"
           style={{
             background:
               "radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%)",

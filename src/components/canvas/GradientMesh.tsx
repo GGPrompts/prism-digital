@@ -39,7 +39,7 @@ export function GradientMesh({
       uColor2: { value: new THREE.Color(isDark ? "#1e3a5f" : "#3b82f6") }, // blue
       uColor3: { value: new THREE.Color(isDark ? "#831843" : "#db2777") }, // pink
       uColor4: { value: new THREE.Color(isDark ? "#2e1065" : "#6d28d9") }, // deep purple
-      uOpacity: { value: device?.isMobile ? 0.2 : (isDark ? 0.25 : 0.15) }, // reduced in light mode
+      uOpacity: { value: device?.isMobile ? 0.15 : (isDark ? 0.18 : 0.12) }, // reduced for better 3D visibility
     }),
     [device?.isMobile, isDark]
   );
@@ -191,7 +191,7 @@ export function GradientMesh({
     );
     materialRef.current.uniforms.uOpacity.value = THREE.MathUtils.lerp(
       materialRef.current.uniforms.uOpacity.value,
-      device?.isMobile ? 0.2 : (isDark ? 0.25 : 0.15),
+      device?.isMobile ? 0.15 : (isDark ? 0.18 : 0.12),
       0.05
     );
   });
