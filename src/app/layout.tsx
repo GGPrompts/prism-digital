@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ContentFade } from "@/components/ui/ContentFade";
 import { ScrollConfig } from "@/components/ScrollConfig";
+import { CustomCursor } from "@/components/CustomCursor";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -132,6 +133,9 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange={false}
         >
+          {/* Custom cursor with trail effect - hidden on mobile */}
+          <CustomCursor />
+
           {/* GSAP ScrollTrigger configuration */}
           <ScrollConfig enableSnap={false} />
 
