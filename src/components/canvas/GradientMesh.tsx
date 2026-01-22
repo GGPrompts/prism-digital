@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
+import { useTheme } from "next-themes";
 import * as THREE from "three";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
@@ -24,21 +25,23 @@ export function GradientMesh({
 }: GradientMeshProps) {
   const meshRef = useRef<THREE.Mesh>(null!);
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
-  // Shader uniforms for animation
+  // Shader uniforms for animation - theme-aware colors
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
       uScrollProgress: { value: 0 },
       uResolution: { value: new THREE.Vector2(1, 1) },
-      // Project color palette - darkened for better contrast with purple shapes
-      uColor1: { value: new THREE.Color("#4c1d95") }, // darker purple
-      uColor2: { value: new THREE.Color("#1e3a5f") }, // darker blue
-      uColor3: { value: new THREE.Color("#831843") }, // darker pink
-      uColor4: { value: new THREE.Color("#2e1065") }, // very dark purple
-      uOpacity: { value: device?.isMobile ? 0.2 : 0.25 }, // reduced opacity
+      // Project color palette - adjusted based on theme
+      uColor1: { value: new THREE.Color(isDark ? "#4c1d95" : "#7c3aed") }, // purple
+      uColor2: { value: new THREE.Color(isDark ? "#1e3a5f" : "#3b82f6") }, // blue
+      uColor3: { value: new THREE.Color(isDark ? "#831843" : "#db2777") }, // pink
+      uColor4: { value: new THREE.Color(isDark ? "#2e1065" : "#6d28d9") }, // deep purple
+      uOpacity: { value: device?.isMobile ? 0.2 : (isDark ? 0.25 : 0.15) }, // reduced in light mode
     }),
-    [device?.isMobile]
+    [device?.isMobile, isDark]
   );
 
   // Vertex shader - subtle wave deformation
@@ -168,6 +171,29 @@ export function GradientMesh({
     materialRef.current.uniforms.uScrollProgress.value = Number.isFinite(scrollProgress)
       ? scrollProgress
       : 0;
+
+    // Smoothly update colors based on theme
+    materialRef.current.uniforms.uColor1.value.lerp(
+      new THREE.Color(isDark ? "#4c1d95" : "#7c3aed"),
+      0.05
+    );
+    materialRef.current.uniforms.uColor2.value.lerp(
+      new THREE.Color(isDark ? "#1e3a5f" : "#3b82f6"),
+      0.05
+    );
+    materialRef.current.uniforms.uColor3.value.lerp(
+      new THREE.Color(isDark ? "#831843" : "#db2777"),
+      0.05
+    );
+    materialRef.current.uniforms.uColor4.value.lerp(
+      new THREE.Color(isDark ? "#2e1065" : "#6d28d9"),
+      0.05
+    );
+    materialRef.current.uniforms.uOpacity.value = THREE.MathUtils.lerp(
+      materialRef.current.uniforms.uOpacity.value,
+      device?.isMobile ? 0.2 : (isDark ? 0.25 : 0.15),
+      0.05
+    );
   });
 
   // Resource cleanup on unmount

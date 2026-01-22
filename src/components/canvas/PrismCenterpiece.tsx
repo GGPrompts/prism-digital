@@ -32,8 +32,8 @@ export function PrismCenterpiece({
   // Hover state for interactivity
   const [hovered, setHovered] = useState(false);
   const smoothHover = useRef(0);
-  const baseEmissiveIntensity = 0.3;
-  const hoverEmissiveIntensity = 0.6;
+  const baseEmissiveIntensity = 0.5;
+  const hoverEmissiveIntensity = 0.8;
 
   // Change cursor to pointer when hovering
   useCursor(hovered);
@@ -157,9 +157,10 @@ export function PrismCenterpiece({
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
       {/* Point lights for rainbow refraction highlights */}
-      <pointLight position={[3, 2, 2]} intensity={2} color="#ff6b9d" />
-      <pointLight position={[-3, -1, 2]} intensity={1.5} color="#6366f1" />
-      <pointLight position={[0, 3, -2]} intensity={1} color="#22d3ee" />
+      <pointLight position={[3, 2, 2]} intensity={3} color="#ff6b9d" />
+      <pointLight position={[-3, -1, 2]} intensity={2.5} color="#6366f1" />
+      <pointLight position={[0, 3, -2]} intensity={2} color="#22d3ee" />
+      <pointLight position={[0, -2, 3]} intensity={1.5} color="#a855f7" />
 
       {/* Main prism mesh */}
       <mesh
@@ -172,31 +173,48 @@ export function PrismCenterpiece({
         onPointerOver={onPointerOver}
         onPointerOut={onPointerOut}
       >
-        {/* Use meshPhysicalMaterial for cleaner glass without FBO artifacts */}
+        {/* Use meshPhysicalMaterial for premium glass appearance */}
         <meshPhysicalMaterial
           envMap={envMap}
-          color="#e9d5ff"
-          emissive="#a855f7"
+          color="#f5d0fe"
+          emissive="#c084fc"
           emissiveIntensity={baseEmissiveIntensity}
-          roughness={0.05}
-          metalness={0.1}
+          roughness={0.02}
+          metalness={0.15}
           clearcoat={1}
-          clearcoatRoughness={0.1}
-          transmission={0.9}
-          thickness={1.5}
-          ior={1.5}
+          clearcoatRoughness={0.05}
+          transmission={0.95}
+          thickness={2}
+          ior={2.0}
           transparent
-          opacity={0.95}
+          opacity={0.92}
+          reflectivity={1}
+          iridescence={0.3}
+          iridescenceIOR={1.3}
+          sheen={0.5}
+          sheenRoughness={0.2}
+          sheenColor="#e879f9"
         />
       </mesh>
 
-      {/* Inner glow mesh for enhanced effect - very subtle */}
-      <mesh position={[0, 0, -0.75]} scale={0.6} frustumCulled={false}>
-        <sphereGeometry args={[0.3, 16, 16]} />
+      {/* Inner glow mesh for enhanced effect */}
+      <mesh position={[0, 0, -0.75]} scale={0.7} frustumCulled={false}>
+        <sphereGeometry args={[0.35, 24, 24]} />
         <meshBasicMaterial
-          color="#a855f7"
+          color="#d946ef"
           transparent
-          opacity={0.03}
+          opacity={0.08}
+          toneMapped={false}
+        />
+      </mesh>
+
+      {/* Secondary outer glow for depth */}
+      <mesh position={[0, 0, -0.75]} scale={0.9} frustumCulled={false}>
+        <sphereGeometry args={[0.5, 16, 16]} />
+        <meshBasicMaterial
+          color="#c084fc"
+          transparent
+          opacity={0.04}
           toneMapped={false}
         />
       </mesh>
