@@ -150,9 +150,10 @@ export function getOptimalParticleCount(capabilities: DeviceCapabilities): numbe
  * Determine if post-processing effects should be enabled
  */
 export function shouldEnableEffects(capabilities: DeviceCapabilities): boolean {
-  // Disable effects on low-end devices and most mobile devices
+  // Disable effects only on low-end devices
   if (capabilities.gpu === "low") return false;
-  if (capabilities.isMobile && capabilities.gpu !== "high") return false;
+  // Enable effects on medium-GPU mobile devices for better visual quality
+  // The Effects component already handles tier-appropriate settings
   return capabilities.hasWebGL2;
 }
 

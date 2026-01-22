@@ -202,8 +202,8 @@ export default function Testimonials() {
                 transform: `rotate(${rotations[index]}deg)`
               }}
             >
-              {/* Card content */}
-              <div className="testimonial-card-inner relative bg-gradient-to-br from-background-tertiary/95 to-background-secondary/90 backdrop-blur-xl border border-primary/15 rounded-3xl p-8 md:p-10 h-full shadow-2xl">
+              {/* Card content - more transparent to show 3D behind */}
+              <div className="testimonial-card-inner relative bg-gradient-to-br from-background-tertiary/70 to-background-secondary/60 backdrop-blur-md border border-primary/20 rounded-3xl p-8 md:p-10 h-full shadow-2xl">
                 {/* Top accent line */}
                 <div className="w-16 h-1 bg-gradient-to-r from-primary to-accent-cyan mb-6" />
 

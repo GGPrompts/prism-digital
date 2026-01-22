@@ -3,6 +3,7 @@
 import { useRef, useMemo, useState, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useEnvironment, useCursor } from "@react-three/drei";
+import { useTheme } from "next-themes";
 import * as THREE from "three";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
@@ -23,6 +24,8 @@ export function PrismCenterpiece({
 }: PrismCenterpieceProps) {
   const meshRef = useRef<THREE.Mesh>(null!);
   const groupRef = useRef<THREE.Group>(null!);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const safeScrollProgress = THREE.MathUtils.clamp(
     Number.isFinite(scrollProgress) ? scrollProgress : 0,
     0,
@@ -32,8 +35,9 @@ export function PrismCenterpiece({
   // Hover state for interactivity
   const [hovered, setHovered] = useState(false);
   const smoothHover = useRef(0);
-  const baseEmissiveIntensity = 0.5;
-  const hoverEmissiveIntensity = 0.8;
+  // Higher emissive in light mode for better visibility
+  const baseEmissiveIntensity = isDark ? 0.5 : 0.65;
+  const hoverEmissiveIntensity = isDark ? 0.8 : 0.95;
 
   // Change cursor to pointer when hovering
   useCursor(hovered);
@@ -174,26 +178,27 @@ export function PrismCenterpiece({
         onPointerOut={onPointerOut}
       >
         {/* Use meshPhysicalMaterial for premium glass appearance */}
+        {/* Reduced transmission in light mode for better visibility */}
         <meshPhysicalMaterial
           envMap={envMap}
-          color="#f5d0fe"
-          emissive="#c084fc"
+          color={isDark ? "#f5d0fe" : "#e9d5ff"}
+          emissive={isDark ? "#c084fc" : "#a855f7"}
           emissiveIntensity={baseEmissiveIntensity}
-          roughness={0.02}
-          metalness={0.15}
+          roughness={isDark ? 0.02 : 0.05}
+          metalness={isDark ? 0.15 : 0.2}
           clearcoat={1}
-          clearcoatRoughness={0.05}
-          transmission={0.95}
+          clearcoatRoughness={isDark ? 0.05 : 0.08}
+          transmission={isDark ? 0.95 : 0.75}
           thickness={2}
-          ior={2.0}
+          ior={isDark ? 2.0 : 1.8}
           transparent
-          opacity={0.92}
+          opacity={isDark ? 0.92 : 0.88}
           reflectivity={1}
-          iridescence={0.3}
+          iridescence={isDark ? 0.3 : 0.4}
           iridescenceIOR={1.3}
-          sheen={0.5}
+          sheen={isDark ? 0.5 : 0.6}
           sheenRoughness={0.2}
-          sheenColor="#e879f9"
+          sheenColor={isDark ? "#e879f9" : "#d946ef"}
         />
       </mesh>
 

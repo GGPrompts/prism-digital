@@ -61,9 +61,6 @@ export function CTA() {
       id="contact"
       ref={sectionRef}
       className="relative overflow-hidden px-6 py-32 md:py-40"
-      style={{
-        background: 'linear-gradient(180deg, #050507 0%, #0a0a0f 50%, #12121a 100%)'
-      }}
     >
       {/* Animated gradient glow overlay */}
       <div className="absolute inset-0 overflow-hidden">

@@ -2,7 +2,8 @@
 
 import { useRef, useMemo, useState, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useCursor } from "@react-three/drei";
+import { useCursor, useEnvironment } from "@react-three/drei";
+import { useTheme } from "next-themes";
 import * as THREE from "three";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
@@ -29,12 +30,18 @@ function FloatingShape({ config, scrollOffset, index }: FloatingShapeProps) {
   const materialRef = useRef<THREE.MeshPhysicalMaterial>(null!);
   const initialPos = useMemo(() => new THREE.Vector3(...config.position), [config.position]);
   const smoothScroll = useRef(0);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+
+  // Load environment map for reflections
+  const envMap = useEnvironment({ preset: "night" });
 
   // Hover state for raycasting
   const [hovered, setHovered] = useState(false);
   const smoothHover = useRef(0);
-  const baseEmissiveIntensity = 0.15;
-  const hoverEmissiveIntensity = 0.5;
+  // Higher base emissive for better visibility, especially in light mode
+  const baseEmissiveIntensity = isDark ? 0.3 : 0.4;
+  const hoverEmissiveIntensity = isDark ? 0.6 : 0.7;
   const hoverScaleMultiplier = 1.12;
 
   // Change cursor to pointer when hovering
@@ -122,17 +129,19 @@ function FloatingShape({ config, scrollOffset, index }: FloatingShapeProps) {
       {/* Use MeshPhysicalMaterial for glass-like appearance matching prism */}
       <meshPhysicalMaterial
         ref={materialRef}
+        envMap={envMap}
         color={config.color}
         emissive={config.emissive}
         emissiveIntensity={baseEmissiveIntensity}
         transparent
-        opacity={0.6}
-        roughness={0.15}
-        metalness={0.1}
-        clearcoat={0.8}
-        clearcoatRoughness={0.2}
-        transmission={0.3}
+        opacity={isDark ? 0.6 : 0.7}
+        roughness={0.1}
+        metalness={0.15}
+        clearcoat={1}
+        clearcoatRoughness={0.1}
+        transmission={isDark ? 0.3 : 0.2}
         thickness={0.5}
+        reflectivity={0.8}
         side={THREE.DoubleSide}
       />
     </mesh>

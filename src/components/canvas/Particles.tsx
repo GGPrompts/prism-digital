@@ -2,6 +2,7 @@
 
 import { useRef, useMemo, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
+import { useTheme } from "next-themes";
 import * as THREE from "three";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
@@ -19,6 +20,8 @@ export function Particles({
   device,
 }: ParticlesProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null!);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   // Pre-allocate reusable objects (avoid GC in render loop)
   const tempObject = useMemo(() => new THREE.Object3D(), []);
@@ -55,16 +58,24 @@ export function Particles({
     return data;
   }, [count]);
 
-  // Purple color variations
+  // Purple color variations - bright and visible in both modes
   const colorPalette = useMemo(
-    () => [
-      new THREE.Color("#8b5cf6"), // violet-500
-      new THREE.Color("#a78bfa"), // violet-400
-      new THREE.Color("#7c3aed"), // violet-600
-      new THREE.Color("#c4b5fd"), // violet-300
-      new THREE.Color("#6d28d9"), // violet-700
-    ],
-    []
+    () => isDark
+      ? [
+          new THREE.Color("#c4b5fd"), // violet-300 - bright for dark bg
+          new THREE.Color("#d8b4fe"), // purple-300
+          new THREE.Color("#e9d5ff"), // purple-200
+          new THREE.Color("#a78bfa"), // violet-400
+          new THREE.Color("#c084fc"), // purple-400
+        ]
+      : [
+          new THREE.Color("#8b5cf6"), // violet-500
+          new THREE.Color("#7c3aed"), // violet-600
+          new THREE.Color("#6d28d9"), // violet-700
+          new THREE.Color("#a855f7"), // purple-500
+          new THREE.Color("#9333ea"), // purple-600
+        ],
+    [isDark]
   );
 
   useFrame((state) => {
@@ -182,16 +193,22 @@ export function Particles({
   // Use lower geometry detail on mobile for better performance
   const geometrySegments = device?.isMobile ? 6 : 8;
 
+  // Theme-aware particle settings
+  // Use normal blending in both modes for consistent visibility
+  // Dark mode needs higher opacity since particles are light on dark
+  const particleOpacity = isDark ? 0.7 : 0.35;
+  const blendMode = THREE.NormalBlending;
+
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
       <sphereGeometry args={[1, geometrySegments, geometrySegments]} />
       <meshBasicMaterial
         toneMapped={false}
         transparent
-        opacity={0.35}
+        opacity={particleOpacity}
         depthWrite={false}
         vertexColors
-        blending={THREE.AdditiveBlending}
+        blending={blendMode}
       />
     </instancedMesh>
   );

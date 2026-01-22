@@ -75,10 +75,10 @@ export function Effects({ device }: EffectsProps) {
   }, [device?.gpu, device?.isMobile]);
 
   // Adaptive bloom values based on GPU tier and theme
-  // Increase bloom in dark mode for glow effects, reduce in light mode
-  const bloomIntensity = effectTier === "high" ? (isDark ? 0.6 : 0.35) : (isDark ? 0.5 : 0.3);
-  const bloomRadius = effectTier === "high" ? (isDark ? 0.5 : 0.3) : (isDark ? 0.4 : 0.25);
-  const vignetteIntensity = isDark ? 0.35 : 0.2;
+  // More balanced between dark/light modes for consistent visual quality
+  const bloomIntensity = effectTier === "high" ? (isDark ? 0.6 : 0.5) : (isDark ? 0.5 : 0.4);
+  const bloomRadius = effectTier === "high" ? (isDark ? 0.5 : 0.45) : (isDark ? 0.4 : 0.35);
+  const vignetteIntensity = isDark ? 0.35 : 0.25;
 
   if (!isComposerSafe) return null;
 
@@ -88,15 +88,15 @@ export function Effects({ device }: EffectsProps) {
       <EffectComposer multisampling={0} stencilBuffer={false}>
         <Vignette
           offset={0.3}
-          darkness={isDark ? 0.4 : 0.25}
+          darkness={isDark ? 0.4 : 0.3}
           blendFunction={BlendFunction.NORMAL}
         />
         <Bloom
-          intensity={isDark ? 0.5 : 0.35}
-          luminanceThreshold={isDark ? 0.5 : 0.6}
+          intensity={isDark ? 0.5 : 0.4}
+          luminanceThreshold={isDark ? 0.5 : 0.5}
           luminanceSmoothing={0.9}
           mipmapBlur={false}
-          radius={isDark ? 0.4 : 0.25}
+          radius={isDark ? 0.4 : 0.35}
           blendFunction={BlendFunction.ADD}
         />
       </EffectComposer>
@@ -109,18 +109,18 @@ export function Effects({ device }: EffectsProps) {
       <EffectComposer multisampling={0} stencilBuffer={false}>
         <Vignette
           offset={0.3}
-          darkness={isDark ? 0.4 : 0.25}
+          darkness={isDark ? 0.4 : 0.3}
           blendFunction={BlendFunction.NORMAL}
         />
         <Bloom
-          intensity={isDark ? 0.6 : 0.4}
-          luminanceThreshold={isDark ? 0.4 : 0.55}
+          intensity={isDark ? 0.6 : 0.5}
+          luminanceThreshold={isDark ? 0.4 : 0.45}
           luminanceSmoothing={0.9}
           mipmapBlur={false}
-          radius={isDark ? 0.5 : 0.3}
+          radius={isDark ? 0.5 : 0.4}
           blendFunction={BlendFunction.ADD}
         />
-        <Noise opacity={isDark ? 0.05 : 0.03} blendFunction={BlendFunction.OVERLAY} />
+        <Noise opacity={isDark ? 0.05 : 0.035} blendFunction={BlendFunction.OVERLAY} />
       </EffectComposer>
     );
   }
@@ -135,10 +135,10 @@ export function Effects({ device }: EffectsProps) {
         blendFunction={BlendFunction.NORMAL}
       />
 
-      {/* Bloom - higher in dark mode for glow effects */}
+      {/* Bloom - balanced between dark/light modes */}
       <Bloom
         intensity={bloomIntensity}
-        luminanceThreshold={isDark ? 0.45 : 0.55}
+        luminanceThreshold={isDark ? 0.4 : 0.45}
         luminanceSmoothing={0.5}
         mipmapBlur={true}
         radius={bloomRadius}
@@ -146,17 +146,17 @@ export function Effects({ device }: EffectsProps) {
       />
 
       {/* Film grain - subtle texture */}
-      <Noise opacity={isDark ? 0.04 : 0.025} blendFunction={BlendFunction.OVERLAY} />
+      <Noise opacity={isDark ? 0.04 : 0.03} blendFunction={BlendFunction.OVERLAY} />
 
       {/* Color grading - subtle enhancement */}
       <HueSaturation
         hue={0}
-        saturation={isDark ? 0.1 : 0.06}
+        saturation={isDark ? 0.1 : 0.08}
         blendFunction={BlendFunction.NORMAL}
       />
       <BrightnessContrast
-        brightness={isDark ? 0.01 : 0.02}
-        contrast={isDark ? 0.02 : 0.01}
+        brightness={isDark ? 0.01 : 0.015}
+        contrast={isDark ? 0.02 : 0.015}
         blendFunction={BlendFunction.NORMAL}
       />
     </EffectComposer>

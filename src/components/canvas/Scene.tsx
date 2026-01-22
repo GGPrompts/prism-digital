@@ -1,6 +1,6 @@
 "use client";
 
-import { Environment } from "@react-three/drei";
+// Environment available via drei if needed for future enhancements
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
@@ -37,7 +37,7 @@ export function Scene() {
     // Adjust lighting based on scroll
     if (lightRef.current) {
       // Increase intensity as user scrolls to make features more visible
-      lightRef.current.intensity = 0.2 + scrollProgress * 0.3;
+      lightRef.current.intensity = 0.4 + scrollProgress * 0.4;
     }
 
     // Subtle environment rotation based on scroll (reduce on mobile)
@@ -52,8 +52,20 @@ export function Scene() {
       {/* Animated gradient mesh background - positioned behind everything */}
       <GradientMesh scrollProgress={scrollProgress} device={device} />
 
-      {/* Subtle ambient lighting */}
-      <ambientLight ref={lightRef} intensity={0.5} />
+      {/* Ambient lighting for base illumination */}
+      <ambientLight ref={lightRef} intensity={0.6} />
+
+      {/* Directional light for surface definition and depth */}
+      <directionalLight
+        position={[5, 5, 5]}
+        intensity={0.8}
+        color="#f5f3ff"
+      />
+      <directionalLight
+        position={[-3, 2, -2]}
+        intensity={0.4}
+        color="#c4b5fd"
+      />
 
       {/* Hero section 3D elements */}
       <Hero3D scrollProgress={scrollProgress} device={device} />

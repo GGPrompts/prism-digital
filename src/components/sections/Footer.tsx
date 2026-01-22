@@ -57,7 +57,7 @@ export function Footer() {
   }, [])
 
   return (
-    <footer className="relative overflow-hidden border-t border-primary/10 bg-background-secondary">
+    <footer className="relative overflow-hidden border-t border-primary/10 bg-background-secondary/60 backdrop-blur-sm">
       {/* Diagonal separator with gradient */}
       <div
         className="absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-primary to-transparent"
