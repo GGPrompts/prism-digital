@@ -6,14 +6,11 @@ import {
   EffectComposer,
   Bloom,
   Vignette,
-  ChromaticAberration,
   Noise,
   HueSaturation,
   BrightnessContrast,
-  Scanline,
 } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
-import { Vector2 } from "three";
 import type { DeviceCapabilities } from "@/hooks/useDeviceDetection";
 
 interface EffectsProps {
@@ -87,8 +84,6 @@ export function Effects({ device }: EffectsProps) {
     return gpuTier;
   }, [device?.gpu, device?.isMobile]);
 
-  // Pre-compute chromatic aberration offset to avoid object creation in render
-  const chromaticOffset = useMemo(() => new Vector2(0.003, 0.003), []);
 
   if (!isComposerSafe) return null;
 
@@ -135,50 +130,40 @@ export function Effects({ device }: EffectsProps) {
     );
   }
 
-  // High tier: all effects enabled
+  // High tier: all effects enabled (tuned for clarity)
   return (
     <EffectComposer multisampling={0} stencilBuffer={false}>
       {/* Vignette for depth - applied first as base */}
       <Vignette
-        offset={0.3}
-        darkness={0.5}
+        offset={0.35}
+        darkness={0.4}
         blendFunction={BlendFunction.NORMAL}
       />
 
-      {/* Bloom for glowing particles - full quality */}
+      {/* Bloom for glowing particles - reduced to avoid washing out text */}
       <Bloom
-        intensity={1.2}
-        luminanceThreshold={0.2}
+        intensity={0.6}
+        luminanceThreshold={0.4}
         luminanceSmoothing={0.9}
         mipmapBlur={true}
-        radius={0.8}
+        radius={0.5}
         blendFunction={BlendFunction.ADD}
       />
 
-      {/* Film grain - adds texture and cinematic feel */}
-      <Noise opacity={0.12} blendFunction={BlendFunction.OVERLAY} />
-
-      {/* Chromatic aberration - subtle edge color fringing */}
-      <ChromaticAberration
-        offset={chromaticOffset}
-        radialModulation={true}
-        modulationOffset={0.5}
-      />
+      {/* Film grain - subtle texture */}
+      <Noise opacity={0.06} blendFunction={BlendFunction.OVERLAY} />
 
       {/* Color grading - enhance purples and cyans for brand colors */}
       <HueSaturation
         hue={0}
-        saturation={0.15}
+        saturation={0.1}
         blendFunction={BlendFunction.NORMAL}
       />
       <BrightnessContrast
-        brightness={0.02}
-        contrast={0.05}
+        brightness={0.01}
+        contrast={0.03}
         blendFunction={BlendFunction.NORMAL}
       />
-
-      {/* Scanline effect - subtle retro-tech aesthetic */}
-      <Scanline density={1.5} opacity={0.08} blendFunction={BlendFunction.OVERLAY} />
     </EffectComposer>
   );
 }
