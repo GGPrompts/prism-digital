@@ -1043,3 +1043,21 @@ blockquote {
   outline: none;
 }
 
+/* -----------------------------------------------------------------------------
+   Custom Cursor Styles
+   ----------------------------------------------------------------------------- */
+
+/* Hide default cursor when custom cursor is active */
+.custom-cursor-active,
+.custom-cursor-active * {
+  cursor: none !important;
+}
+
+/* Ensure cursor is visible in specific contexts (like text selection) */
+.custom-cursor-active input[type="text"],
+.custom-cursor-active input[type="email"],
+.custom-cursor-active input[type="password"],
+.custom-cursor-active textarea {
+  cursor: text !important;
+}
+
