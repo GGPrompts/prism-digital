@@ -74,8 +74,8 @@ export function Header() {
 
   const navLinks = [
     { href: "#features", label: "Features" },
+    { href: "/work", label: "Work" },
     { href: "/demos", label: "Demos" },
-    { href: "#about", label: "About" },
     { href: "#contact", label: "Contact" },
   ];
 
@@ -200,8 +200,8 @@ export function Header() {
 
             {/* CTA Button */}
             <a
-              href="#contact"
-              onClick={(e) => handleNavClick(e, '#contact')}
+              href="/work"
+              onClick={(e) => handleNavClick(e, '/work')}
               className="
                 cta-button relative group
                 px-6 py-2.5 rounded-lg
@@ -385,8 +385,8 @@ export function Header() {
           {/* Mobile CTA */}
           <div className="mt-8">
             <a
-              href="#contact"
-              onClick={(e) => handleNavClick(e, '#contact')}
+              href="/work"
+              onClick={(e) => handleNavClick(e, '/work')}
               className="
                 block group relative
                 px-8 py-5 rounded-xl
