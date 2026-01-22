@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ProcessIcon3D } from "@/components/canvas/ProcessIcon3D";
 import { useDeviceDetection } from "@/hooks/useDeviceDetection";
+import { useTextRevealOnRef } from "@/hooks/useTextReveal";
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
@@ -74,10 +75,33 @@ export function Process() {
   const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
   const indicatorsRef = useRef<(HTMLDivElement | null)[]>([]);
   const headerRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
   const device = useDeviceDetection();
 
   // Determine if we should use 3D icons (desktop/tablet with good GPU)
   const use3DIcons = !device.isMobile && device.gpu !== "low";
+
+  // Apply text reveal to section title
+  useTextRevealOnRef(titleRef, {
+    duration: 1,
+    stagger: 0.04,
+    yOffset: 30,
+    triggerOnScroll: true,
+    triggerStart: "top 85%",
+    splitBy: "chars",
+  });
+
+  // Apply text reveal to subtitle
+  useTextRevealOnRef(subtitleRef, {
+    duration: 0.8,
+    stagger: 0.02,
+    yOffset: 20,
+    triggerOnScroll: true,
+    triggerStart: "top 85%",
+    delay: 0.3,
+    splitBy: "words",
+  });
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -232,10 +256,18 @@ export function Process() {
               How We Work
             </span>
           </div>
-          <h2 className="text-gradient mb-6 text-5xl font-bold md:text-7xl">
+          <h2
+            ref={titleRef}
+            className="text-gradient mb-6 text-5xl font-bold md:text-7xl"
+            style={{ opacity: 0 }}
+          >
             Our Process
           </h2>
-          <p className="mx-auto max-w-2xl text-lg text-foreground-muted">
+          <p
+            ref={subtitleRef}
+            className="mx-auto max-w-2xl text-lg text-foreground-muted"
+            style={{ opacity: 0 }}
+          >
             From concept to launch, we transform your vision into immersive 3D realities
           </p>
         </div>

@@ -3,23 +3,81 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTextRevealOnRef } from '@/hooks/useTextReveal'
 
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
 
+// Check for reduced motion preference
+function prefersReducedMotion(): boolean {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
   const headlineRef = useRef<HTMLHeadingElement>(null)
+  const headlineLine1Ref = useRef<HTMLSpanElement>(null)
+  const headlineLine2Ref = useRef<HTMLSpanElement>(null)
   const subtextRef = useRef<HTMLParagraphElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
   const scrollIndicatorRef = useRef<HTMLDivElement>(null)
 
+  // Apply text reveal animations to headline lines
+  useTextRevealOnRef(headlineLine1Ref, {
+    duration: 1,
+    stagger: 0.04,
+    yOffset: 30,
+    triggerOnScroll: false, // Animate on page load
+    delay: 0.3,
+    splitBy: 'chars',
+  })
+
+  useTextRevealOnRef(headlineLine2Ref, {
+    duration: 1,
+    stagger: 0.04,
+    yOffset: 30,
+    triggerOnScroll: false,
+    delay: 0.8, // Staggered after first line
+    splitBy: 'chars',
+  })
+
+  // Apply text reveal to subtext
+  useTextRevealOnRef(subtextRef, {
+    duration: 0.8,
+    stagger: 0.02,
+    yOffset: 20,
+    triggerOnScroll: false,
+    delay: 1.4, // After headline finishes
+    splitBy: 'words',
+  })
+
   useEffect(() => {
     if (!sectionRef.current) return
 
+    const reducedMotion = prefersReducedMotion()
+
     const ctx = gsap.context(() => {
+      // CTA fade in animation
+      if (ctaRef.current && !reducedMotion) {
+        gsap.fromTo(
+          ctaRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.8, delay: 2, ease: 'power3.out' }
+        )
+      }
+
+      // Scroll indicator fade in
+      if (scrollIndicatorRef.current && !reducedMotion) {
+        gsap.fromTo(
+          scrollIndicatorRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.6, delay: 2.5, ease: 'power2.out' }
+        )
+      }
+
       // Fade out hero content as user scrolls
       if (headlineRef.current) {
         gsap.to(headlineRef.current, {
@@ -97,10 +155,18 @@ export function Hero() {
               ref={headlineRef}
               className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.95] text-center hero-headline"
             >
-              <span className="block text-gradient">
+              <span
+                ref={headlineLine1Ref}
+                className="block text-gradient"
+                style={{ opacity: 0 }}
+              >
                 Building the Future
               </span>
-              <span className="block text-white">
+              <span
+                ref={headlineLine2Ref}
+                className="block text-white"
+                style={{ opacity: 0 }}
+              >
                 of Web3D
               </span>
             </h1>
@@ -108,16 +174,15 @@ export function Hero() {
             <p
               ref={subtextRef}
               className="mx-auto max-w-2xl text-center text-lg md:text-xl lg:text-2xl text-foreground-muted font-light tracking-wide hero-subtext"
+              style={{ opacity: 0 }}
             >
-              Immersive 3D experiences for the modern web.{' '}
-              <span className="text-primary-hover font-medium">
-                Pushing boundaries, breaking conventions.
-              </span>
+              Immersive 3D experiences for the modern web. Pushing boundaries, breaking conventions.
             </p>
 
             <div
               ref={ctaRef}
               className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 pt-4 md:pt-8 hero-cta"
+              style={{ opacity: 0 }}
             >
               <button className="btn btn-primary glow-pulse">
                 See Our Work
@@ -135,6 +200,7 @@ export function Hero() {
       <div
         ref={scrollIndicatorRef}
         className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none hero-scroll"
+        style={{ opacity: 0 }}
       >
         <span className="text-xs md:text-sm font-medium tracking-widest uppercase text-foreground-subtle" style={{textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)'}}>
           Scroll

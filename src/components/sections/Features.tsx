@@ -5,8 +5,15 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Sparkles, MousePointer2, Code2 } from "lucide-react";
 import { FeatureCard } from "./FeatureCard";
+import { useTextRevealOnRef } from "@/hooks/useTextReveal";
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Check for reduced motion preference
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
 
 const features = [
   {
@@ -35,44 +42,36 @@ export function Features() {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
 
+  // Apply text reveal to section title
+  useTextRevealOnRef(titleRef, {
+    duration: 1,
+    stagger: 0.04,
+    yOffset: 30,
+    triggerOnScroll: true,
+    triggerStart: "top 85%",
+    splitBy: "chars",
+  });
+
+  // Apply text reveal to subtitle
+  useTextRevealOnRef(subtitleRef, {
+    duration: 0.8,
+    stagger: 0.02,
+    yOffset: 20,
+    triggerOnScroll: true,
+    triggerStart: "top 85%",
+    delay: 0.3,
+    splitBy: "words",
+  });
+
   useEffect(() => {
-    if (!sectionRef.current || !titleRef.current || !cardsRef.current) return;
+    if (!sectionRef.current || !cardsRef.current) return;
+
+    const reducedMotion = prefersReducedMotion();
 
     const ctx = gsap.context(() => {
-      // Title animation
-      gsap.from(titleRef.current, {
-        y: 80,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          end: "top 50%",
-          toggleActions: "play none none reverse",
-        },
-      });
-
-      // Subtitle animation
-      if (subtitleRef.current) {
-        gsap.from(subtitleRef.current, {
-          y: 60,
-          opacity: 0,
-          duration: 1,
-          delay: 0.2,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 80%",
-            end: "top 50%",
-            toggleActions: "play none none reverse",
-          },
-        });
-      }
-
       // Feature cards staggered animation
       const cards = cardsRef.current?.querySelectorAll(".feature-card");
-      if (cards) {
+      if (cards && !reducedMotion) {
         gsap.from(cards, {
           y: 100,
           opacity: 0,
@@ -89,16 +88,18 @@ export function Features() {
       }
 
       // Parallax effect for the entire section
-      gsap.to(sectionRef.current, {
-        y: -50,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1,
-        },
-      });
+      if (!reducedMotion) {
+        gsap.to(sectionRef.current, {
+          y: -50,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1,
+          },
+        });
+      }
     }, sectionRef);
 
     return () => ctx.revert();
@@ -128,15 +129,16 @@ export function Features() {
           <h2
             ref={titleRef}
             className="mb-6 bg-gradient-to-r from-primary via-primary-hover to-accent-cyan bg-clip-text text-5xl font-bold tracking-tight text-transparent md:text-6xl"
+            style={{ opacity: 0 }}
           >
             What We Create
           </h2>
           <p
             ref={subtitleRef}
             className="mx-auto max-w-2xl text-lg text-foreground-muted md:text-xl"
+            style={{ opacity: 0 }}
           >
-            Pushing the boundaries of web technology to deliver extraordinary 3D
-            experiences
+            Pushing the boundaries of web technology to deliver extraordinary 3D experiences
           </p>
         </div>
 

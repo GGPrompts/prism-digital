@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTextRevealOnRef } from '@/hooks/useTextReveal';
 
 interface Testimonial {
   quote: string;
@@ -60,6 +61,29 @@ export default function Testimonials() {
   const metricsRef = useRef<(HTMLDivElement | null)[]>([]);
   const quoteMarkRef = useRef<HTMLDivElement>(null);
   const trustBadgesRef = useRef<(HTMLDivElement | null)[]>([]);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+
+  // Apply text reveal to section title
+  useTextRevealOnRef(titleRef, {
+    duration: 1,
+    stagger: 0.04,
+    yOffset: 30,
+    triggerOnScroll: true,
+    triggerStart: "top 85%",
+    splitBy: "chars",
+  });
+
+  // Apply text reveal to subtitle
+  useTextRevealOnRef(subtitleRef, {
+    duration: 0.8,
+    stagger: 0.02,
+    yOffset: 20,
+    triggerOnScroll: true,
+    triggerStart: "top 85%",
+    delay: 0.3,
+    splitBy: "words",
+  });
 
   useEffect(() => {
     const observerOptions = {
@@ -126,10 +150,18 @@ export default function Testimonials() {
               Social Proof
             </span>
           </div>
-          <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-            Trusted by <span className="text-gradient">Visionaries</span>
+          <h2
+            ref={titleRef}
+            className="text-5xl md:text-7xl font-bold mb-6 tracking-tight"
+            style={{ opacity: 0 }}
+          >
+            Trusted by Visionaries
           </h2>
-          <p className="text-lg text-foreground-muted max-w-2xl mx-auto">
+          <p
+            ref={subtitleRef}
+            className="text-lg text-foreground-muted max-w-2xl mx-auto"
+            style={{ opacity: 0 }}
+          >
             We&apos;ve partnered with forward-thinking companies to create experiences that redefine what&apos;s possible on the web.
           </p>
         </div>
