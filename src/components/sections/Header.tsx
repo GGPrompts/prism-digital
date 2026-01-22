@@ -73,22 +73,33 @@ export function Header() {
   }, [mobileMenuOpen]);
 
   const navLinks = [
-    { href: "#features", label: "Features" },
+    { href: "/#features", label: "Features" },
     { href: "/demos", label: "Demos" },
-    { href: "#about", label: "About" },
-    { href: "#contact", label: "Contact" },
+    { href: "/#about", label: "About" },
+    { href: "/#contact", label: "Contact" },
   ];
 
   // Smooth scroll handler for navigation links
   const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    // For page routes (not anchors), let the browser handle navigation
-    if (!href.startsWith('#')) {
+    // For page routes without anchors, let the browser handle navigation
+    if (!href.includes('#')) {
       setMobileMenuOpen(false);
       return;
     }
 
+    // Extract the path and anchor parts
+    const [path, anchor] = href.split('#');
+    const targetId = anchor;
+    const isCurrentPage = path === '' || path === '/' || window.location.pathname === path || window.location.pathname === '/';
+
+    // If we're on a different page, let the browser navigate
+    if (!isCurrentPage && path !== '') {
+      setMobileMenuOpen(false);
+      return;
+    }
+
+    // If we're on the current page or it's a root anchor, smooth scroll
     e.preventDefault();
-    const targetId = href.replace('#', '');
     const element = document.getElementById(targetId);
 
     if (element) {
@@ -117,8 +128,8 @@ export function Header() {
         <nav className="container-custom flex items-center justify-between h-20 px-6">
           {/* Logo */}
           <a
-            href="#hero"
-            onClick={(e) => handleNavClick(e, '#hero')}
+            href="/"
+            onClick={(e) => handleNavClick(e, '/#hero')}
             className="
               logo group relative z-10
               text-2xl font-bold tracking-tighter
@@ -200,8 +211,7 @@ export function Header() {
 
             {/* CTA Button */}
             <a
-              href="#contact"
-              onClick={(e) => handleNavClick(e, '#contact')}
+              href="/demos"
               className="
                 cta-button relative group
                 px-6 py-2.5 rounded-lg
@@ -385,8 +395,8 @@ export function Header() {
           {/* Mobile CTA */}
           <div className="mt-8">
             <a
-              href="#contact"
-              onClick={(e) => handleNavClick(e, '#contact')}
+              href="/demos"
+              onClick={() => setMobileMenuOpen(false)}
               className="
                 block group relative
                 px-8 py-5 rounded-xl

@@ -8,10 +8,11 @@ export function Footer() {
   const [emailFocused, setEmailFocused] = useState(false)
 
   const navLinks = [
-    { name: 'Home', href: '#hero' },
-    { name: 'Features', href: '#features' },
-    { name: 'About', href: '#about' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Home', href: '/' },
+    { name: 'Features', href: '/#features' },
+    { name: 'Demos', href: '/demos' },
+    { name: 'About', href: '/#about' },
+    { name: 'Contact', href: '/#contact' },
   ]
 
   const services = [
@@ -29,9 +30,23 @@ export function Footer() {
 
   // Smooth scroll handler for navigation links
   const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // For page routes without anchors, let the browser handle navigation
+    if (!href.includes('#')) {
+      return
+    }
+
+    // Extract the path and anchor parts
+    const [path, anchor] = href.split('#')
+    const isCurrentPage = path === '' || path === '/' || window.location.pathname === path || window.location.pathname === '/'
+
+    // If we're on a different page, let the browser navigate
+    if (!isCurrentPage && path !== '') {
+      return
+    }
+
+    // If we're on the current page, smooth scroll
     e.preventDefault()
-    const targetId = href.replace('#', '')
-    const element = document.getElementById(targetId)
+    const element = document.getElementById(anchor)
 
     if (element) {
       element.scrollIntoView({
@@ -272,26 +287,17 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Legal links */}
+          {/* Legal links - placeholder until pages are created */}
           <div className="flex gap-6 font-mono text-xs">
-            <a
-              href="/privacy"
-              className="text-foreground-subtle transition-colors hover:text-primary hover:underline hover:decoration-primary/50 hover:underline-offset-4"
-            >
+            <span className="text-foreground-subtle cursor-default">
               Privacy
-            </a>
-            <a
-              href="/terms"
-              className="text-foreground-subtle transition-colors hover:text-primary hover:underline hover:decoration-primary/50 hover:underline-offset-4"
-            >
+            </span>
+            <span className="text-foreground-subtle cursor-default">
               Terms
-            </a>
-            <a
-              href="/cookies"
-              className="text-foreground-subtle transition-colors hover:text-primary hover:underline hover:decoration-primary/50 hover:underline-offset-4"
-            >
+            </span>
+            <span className="text-foreground-subtle cursor-default">
               Cookies
-            </a>
+            </span>
           </div>
 
           {/* Back to top with animated arrow */}

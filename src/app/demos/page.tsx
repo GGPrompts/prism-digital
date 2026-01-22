@@ -105,9 +105,11 @@ function DemoCard({ demo, index }: { demo: Demo; index: number }) {
 
   const cardContent = (
     <div
-      className="demo-card glass-card group relative overflow-hidden p-8 text-foreground"
+      className="demo-card group relative overflow-hidden rounded-2xl p-8 text-foreground border border-primary/20 hover:border-primary/40 transition-all duration-300"
       style={{
         animationDelay: `${index * 100}ms`,
+        background: "var(--glass-card-bg)",
+        boxShadow: "var(--glass-card-shadow)",
       }}
     >
       {/* Coming Soon Badge */}
