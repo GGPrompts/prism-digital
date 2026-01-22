@@ -68,7 +68,7 @@ const demos: Demo[] = [
       "Real-time physics simulation with interactive objects and forces",
     icon: Atom,
     tags: ["physics", "simulation", "interactive"],
-    status: "coming-soon",
+    status: "live",
   },
   {
     slug: "shaders",
