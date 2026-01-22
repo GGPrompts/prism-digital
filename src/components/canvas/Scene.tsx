@@ -7,6 +7,7 @@ import * as THREE from "three";
 import { Hero3D } from "./Hero3D";
 import { PrismCenterpiece } from "./PrismCenterpiece";
 import { FeaturesParticles } from "./FeaturesParticles";
+import TestimonialsScene from "./TestimonialsScene";
 import { Effects } from "./Effects";
 import { GradientMesh } from "./GradientMesh";
 import { useGSAPScroll } from "@/hooks/useGSAPScroll";
@@ -63,6 +64,9 @@ export function Scene() {
 
       {/* Features section particles */}
       <FeaturesParticles scrollProgress={scrollProgress} device={device} />
+
+      {/* Testimonials section 3D background */}
+      <TestimonialsScene scrollProgress={scrollProgress} />
 
       {/* Post-processing effects - only on capable devices */}
       {enableEffects && <Effects device={device} />}
