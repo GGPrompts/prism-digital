@@ -41,7 +41,7 @@ const demos: Demo[] = [
       "Interactive 3D product customization with real-time material and color changes",
     icon: Box,
     tags: ["3d", "interactive", "r3f"],
-    status: "coming-soon",
+    status: "live",
   },
   {
     slug: "particles",
