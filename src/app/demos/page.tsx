@@ -86,7 +86,7 @@ const demos: Demo[] = [
       "3D data visualization with interactive charts, graphs, and exploratory views",
     icon: BarChart3,
     tags: ["data", "charts", "interactive"],
-    status: "coming-soon",
+    status: "live",
   },
   {
     slug: "portfolio",
