@@ -193,13 +193,13 @@ export function PrismCenterpiece({
         )}
       </mesh>
 
-      {/* Inner glow mesh for enhanced effect */}
-      <mesh position={[0, 0, -0.75]} scale={0.95} frustumCulled={false}>
-        <boxGeometry args={[0.5, 0.5, 0.5]} />
+      {/* Inner glow mesh for enhanced effect - very subtle */}
+      <mesh position={[0, 0, -0.75]} scale={0.6} frustumCulled={false}>
+        <sphereGeometry args={[0.3, 16, 16]} />
         <meshBasicMaterial
           color="#a855f7"
           transparent
-          opacity={0.1}
+          opacity={0.03}
           toneMapped={false}
         />
       </mesh>

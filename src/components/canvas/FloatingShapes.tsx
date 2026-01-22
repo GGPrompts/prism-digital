@@ -55,11 +55,14 @@ function FloatingShape({ config, mouse, scrollOffset, index }: FloatingShapeProp
       frustumCulled={false}
     >
       {geometry}
-      <meshBasicMaterial
-        color={config.emissive}
+      <meshStandardMaterial
+        color={config.color}
+        emissive={config.emissive}
+        emissiveIntensity={0.3}
         transparent
-        opacity={0.6}
-        depthWrite={false}
+        opacity={0.85}
+        roughness={0.3}
+        metalness={0.5}
         side={THREE.DoubleSide}
       />
     </mesh>

@@ -50,8 +50,8 @@ export function CustomCursor() {
 
   // Animation loop for smooth cursor movement and trail
   const animate = useCallback(() => {
-    // Smooth cursor follow with easing
-    const easing = 0.15;
+    // Smooth cursor follow with easing (higher = more responsive)
+    const easing = 0.35;
     cursorPos.current.x += (mousePos.current.x - cursorPos.current.x) * easing;
     cursorPos.current.y += (mousePos.current.y - cursorPos.current.y) * easing;
 

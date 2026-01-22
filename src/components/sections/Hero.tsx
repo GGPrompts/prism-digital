@@ -26,12 +26,13 @@ export function Hero() {
   const scrollIndicatorRef = useRef<HTMLDivElement>(null)
 
   // Apply text reveal animations to headline lines
+  // Delays account for ContentFade (200ms + 1000ms transition)
   useTextRevealOnRef(headlineLine1Ref, {
     duration: 1,
     stagger: 0.04,
     yOffset: 30,
     triggerOnScroll: false, // Animate on page load
-    delay: 0.3,
+    delay: 1.5, // Start after ContentFade completes
     splitBy: 'chars',
   })
 
@@ -40,7 +41,7 @@ export function Hero() {
     stagger: 0.04,
     yOffset: 30,
     triggerOnScroll: false,
-    delay: 0.8, // Staggered after first line
+    delay: 2.0, // Staggered after first line
     splitBy: 'chars',
   })
 
@@ -50,7 +51,7 @@ export function Hero() {
     stagger: 0.02,
     yOffset: 20,
     triggerOnScroll: false,
-    delay: 1.4, // After headline finishes
+    delay: 2.6, // After headline finishes
     splitBy: 'words',
   })
 
@@ -60,12 +61,12 @@ export function Hero() {
     const reducedMotion = prefersReducedMotion()
 
     const ctx = gsap.context(() => {
-      // CTA fade in animation
+      // CTA fade in animation (after text reveals complete)
       if (ctaRef.current && !reducedMotion) {
         gsap.fromTo(
           ctaRef.current,
           { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.8, delay: 2, ease: 'power3.out' }
+          { opacity: 1, y: 0, duration: 0.8, delay: 3.2, ease: 'power3.out' }
         )
       }
 
@@ -74,7 +75,7 @@ export function Hero() {
         gsap.fromTo(
           scrollIndicatorRef.current,
           { opacity: 0 },
-          { opacity: 1, duration: 0.6, delay: 2.5, ease: 'power2.out' }
+          { opacity: 1, duration: 0.6, delay: 3.8, ease: 'power2.out' }
         )
       }
 
