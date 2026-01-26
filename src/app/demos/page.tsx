@@ -105,16 +105,15 @@ function DemoCard({ demo, index }: { demo: Demo; index: number }) {
 
   const cardContent = (
     <div
-      className="demo-card group relative overflow-hidden rounded-2xl p-8 text-foreground border border-primary/20 hover:border-primary/40 transition-all duration-300"
+      className="demo-card group relative overflow-hidden rounded-2xl p-8 text-foreground border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 backdrop-blur-sm bg-white/5 dark:bg-white/5 hover:bg-white/10"
       style={{
         animationDelay: `${index * 100}ms`,
-        background: "var(--glass-card-bg)",
-        boxShadow: "var(--glass-card-shadow)",
+        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)",
       }}
     >
       {/* Coming Soon Badge */}
       {isComingSoon && (
-        <div className="absolute right-4 top-4 z-20 rounded-full bg-primary/20 px-3 py-1 text-xs font-medium text-primary backdrop-blur-sm">
+        <div className="absolute right-4 top-4 z-20 rounded-full bg-primary/30 dark:bg-primary/20 px-3 py-1 text-xs font-medium text-primary-foreground dark:text-primary backdrop-blur-sm border border-primary/30">
           Coming Soon
         </div>
       )}
@@ -155,7 +154,7 @@ function DemoCard({ demo, index }: { demo: Demo; index: number }) {
           {demo.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-primary/10 dark:bg-white/5 px-2.5 py-1 text-xs font-medium text-foreground-muted transition-colors group-hover:bg-primary/20 group-hover:text-primary"
+              className="rounded-full bg-primary/15 dark:bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary/80 dark:text-primary/70 transition-colors group-hover:bg-primary/25 group-hover:text-primary"
             >
               {tag}
             </span>
@@ -252,17 +251,18 @@ export default function DemosPage() {
     <>
       <Header />
 
-      {/* Background gradient - transparent to show through to page background */}
-      <div className="fixed inset-0 -z-10 bg-background/80 dark:bg-background/60">
+      {/* Solid background to cover the global 3D canvas */}
+      <div className="fixed inset-0 z-0 bg-background">
+        {/* Gradient accents */}
         <div
-          className="absolute left-1/2 top-1/3 h-[1000px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 dark:opacity-20 blur-3xl"
+          className="absolute left-1/2 top-1/3 h-[1000px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20 dark:opacity-30 blur-3xl"
           style={{
             background:
               "radial-gradient(circle, var(--primary) 0%, transparent 70%)",
           }}
         />
         <div
-          className="absolute bottom-0 right-0 h-[600px] w-[600px] rounded-full opacity-8 dark:opacity-10 blur-3xl"
+          className="absolute bottom-0 right-0 h-[600px] w-[600px] rounded-full opacity-10 dark:opacity-15 blur-3xl"
           style={{
             background:
               "radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%)",
@@ -270,7 +270,7 @@ export default function DemosPage() {
         />
       </div>
 
-      <main className="min-h-screen pt-24">
+      <main className="relative z-10 min-h-screen pt-24">
         <section ref={sectionRef} className="relative overflow-hidden py-20">
           <div className="mx-auto max-w-7xl px-6">
             {/* Back link */}
