@@ -104,10 +104,10 @@ function DemoCard({ demo, index }: { demo: Demo; index: number }) {
 
   const cardContent = (
     <div
-      className="demo-card group relative overflow-hidden rounded-2xl p-8 text-foreground border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 backdrop-blur-sm bg-white/5 dark:bg-white/5 hover:bg-white/10"
+      className="demo-card group relative overflow-hidden rounded-2xl p-8 text-foreground border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300 backdrop-blur-md bg-zinc-100/95 dark:bg-zinc-900/95 hover:bg-zinc-100 dark:hover:bg-zinc-800/95"
       style={{
         animationDelay: `${index * 100}ms`,
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)",
+        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)",
       }}
     >
       {/* Coming Soon Badge */}
@@ -224,21 +224,26 @@ export default function DemosPage() {
         });
       }
 
-      // Demo cards - set visible immediately, then animate
+      // Demo cards animation
       const cards = cardsRef.current?.querySelectorAll(".demo-card");
       if (cards) {
-        // Ensure cards are visible first
-        gsap.set(cards, { opacity: 1, y: 0 });
-
-        // Then animate if motion is allowed
         if (!reducedMotion) {
-          gsap.from(cards, {
-            y: 30,
-            opacity: 0,
-            duration: 0.5,
-            stagger: 0.06,
-            ease: "power2.out",
-          });
+          // Use fromTo for explicit control of start and end states
+          gsap.fromTo(
+            cards,
+            { y: 30, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.5,
+              stagger: 0.06,
+              ease: "power2.out",
+              clearProps: "all", // Clean up inline styles after animation
+            }
+          );
+        } else {
+          // Ensure visible for reduced motion preference
+          gsap.set(cards, { opacity: 1, y: 0, clearProps: "all" });
         }
       }
     }, sectionRef);
@@ -248,8 +253,8 @@ export default function DemosPage() {
 
   return (
     <>
-      {/* Solid background to cover the global 3D canvas */}
-      <div className="fixed inset-0 z-0 bg-background">
+      {/* Solid background to fully cover the global 3D canvas */}
+      <div className="fixed inset-0 z-[1] bg-background">
         {/* Gradient accents */}
         <div
           className="absolute left-1/2 top-1/3 h-[1000px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20 dark:opacity-30 blur-3xl"
