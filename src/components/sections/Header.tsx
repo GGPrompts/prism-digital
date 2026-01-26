@@ -87,20 +87,20 @@ export function Header() {
       return;
     }
 
-    // Extract the path and anchor parts
-    const [path, anchor] = href.split('#');
-    const targetId = anchor;
-    const isCurrentPage = path === '' || path === '/' || window.location.pathname === path || window.location.pathname === '/';
+    // Extract the anchor part
+    const [, anchor] = href.split('#');
+    const isOnLandingPage = window.location.pathname === '/';
 
-    // If we're on a different page, let the browser navigate
-    if (!isCurrentPage && path !== '') {
+    // If we're not on the landing page, navigate to landing page with hash
+    if (!isOnLandingPage) {
       setMobileMenuOpen(false);
+      window.location.href = `/#${anchor}`;
       return;
     }
 
-    // If we're on the current page or it's a root anchor, smooth scroll
+    // We're on the landing page, smooth scroll to the element
     e.preventDefault();
-    const element = document.getElementById(targetId);
+    const element = document.getElementById(anchor);
 
     if (element) {
       element.scrollIntoView({
