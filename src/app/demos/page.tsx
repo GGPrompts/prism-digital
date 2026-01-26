@@ -224,17 +224,22 @@ export default function DemosPage() {
         });
       }
 
-      // Demo cards staggered animation - animate on load, no scroll trigger
+      // Demo cards - set visible immediately, then animate
       const cards = cardsRef.current?.querySelectorAll(".demo-card");
-      if (cards && !reducedMotion) {
-        gsap.from(cards, {
-          y: 40,
-          opacity: 0,
-          duration: 0.6,
-          stagger: 0.08,
-          ease: "power2.out",
-          delay: 0.3, // Wait for page to settle
-        });
+      if (cards) {
+        // Ensure cards are visible first
+        gsap.set(cards, { opacity: 1, y: 0 });
+
+        // Then animate if motion is allowed
+        if (!reducedMotion) {
+          gsap.from(cards, {
+            y: 30,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.06,
+            ease: "power2.out",
+          });
+        }
       }
     }, sectionRef);
 
