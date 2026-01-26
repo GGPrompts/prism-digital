@@ -36,7 +36,7 @@ export function CanvasWrapper() {
       <Loader />
 
       <Canvas
-        className="!fixed inset-0"
+        className="!fixed inset-0 -z-10"
         gl={{
           antialias: !device.isMobile,
           alpha: true,
