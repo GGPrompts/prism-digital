@@ -31,19 +31,12 @@ export function Scene() {
   );
 
   const lightRef = useRef<THREE.AmbientLight>(null);
-  const envRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
     // Adjust lighting based on scroll
     if (lightRef.current) {
       // Increase intensity as user scrolls to make features more visible
       lightRef.current.intensity = 0.4 + scrollProgress * 0.4;
-    }
-
-    // Subtle environment rotation based on scroll (reduce on mobile)
-    if (envRef.current) {
-      const rotationMultiplier = device.isMobile ? 0.1 : 0.2;
-      envRef.current.rotation.y = scrollProgress * Math.PI * rotationMultiplier;
     }
   });
 

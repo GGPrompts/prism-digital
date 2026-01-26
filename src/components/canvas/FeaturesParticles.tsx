@@ -86,6 +86,9 @@ export function FeaturesParticles({ scrollProgress = 0, device }: FeaturesPartic
     []
   );
 
+  // Pre-allocated cyan color for helix lerping (avoid GC in useFrame)
+  const cyanColor = useMemo(() => new THREE.Color("#22d3ee"), []);
+
   // Smoothed scroll value for buttery transitions
   const smoothScrollRef = useRef(0);
 
@@ -174,9 +177,9 @@ export function FeaturesParticles({ scrollProgress = 0, device }: FeaturesPartic
       const brightness = 0.7 + Math.sin(time * 2 + phase) * 0.2 + w2 * 0.3 + w3 * 0.2;
       tempColor.multiplyScalar(brightness);
 
-      // Add cyan tint for helix formation
+      // Add cyan tint for helix formation (using pre-allocated color)
       if (w3 > 0.1) {
-        tempColor.lerp(new THREE.Color("#22d3ee"), w3 * 0.3);
+        tempColor.lerp(cyanColor, w3 * 0.3);
       }
 
       meshRef.current.setColorAt(i, tempColor);
@@ -192,15 +195,16 @@ export function FeaturesParticles({ scrollProgress = 0, device }: FeaturesPartic
     meshRef.current.rotation.x = Math.sin(time * 0.1) * 0.1 * (w2 + w3);
   });
 
-  // Resource cleanup on unmount
+  // Resource cleanup on unmount (capture ref to avoid stale access)
   useEffect(() => {
+    const mesh = meshRef.current;
     return () => {
-      if (meshRef.current) {
-        meshRef.current.geometry.dispose();
-        if (Array.isArray(meshRef.current.material)) {
-          meshRef.current.material.forEach((mat) => mat.dispose());
+      if (mesh) {
+        mesh.geometry.dispose();
+        if (Array.isArray(mesh.material)) {
+          mesh.material.forEach((mat) => mat.dispose());
         } else {
-          meshRef.current.material.dispose();
+          mesh.material.dispose();
         }
       }
     };

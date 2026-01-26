@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo, useState, useCallback } from "react";
+import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useEnvironment, useCursor } from "@react-three/drei";
 import { useTheme } from "next-themes";
@@ -71,6 +71,13 @@ export function PrismCenterpiece({
 
     return new THREE.ExtrudeGeometry(shape, extrudeSettings);
   }, []);
+
+  // Dispose geometry on unmount
+  useEffect(() => {
+    return () => {
+      geometry.dispose();
+    };
+  }, [geometry]);
 
   // Pre-allocate for animation
   const smoothRotation = useRef({ x: 0, y: 0, z: 0 });

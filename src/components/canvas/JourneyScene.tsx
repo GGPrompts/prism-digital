@@ -66,7 +66,7 @@ export function JourneyScene({ scrollProgress, device }: JourneySceneProps) {
     const lookAtTarget = lookAtPath.getPoint(smoothProgressRef.current);
 
     // Apply position with subtle breathing motion
-    const breathe = Math.sin(state.clock.elapsedTime * 0.5) * 0.05;
+    const breathe = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.05;
     camera.position.set(cameraPos.x, cameraPos.y + breathe, cameraPos.z);
 
     // Smooth look-at
@@ -510,6 +510,13 @@ function Crystal({ position, scale, rotation, color, opacity }: CrystalProps) {
 
     return new THREE.ExtrudeGeometry(shape, extrudeSettings);
   }, []);
+
+  // Dispose geometry on unmount
+  useEffect(() => {
+    return () => {
+      geometry.dispose();
+    };
+  }, [geometry]);
 
   useFrame((state) => {
     if (!meshRef.current) return;

@@ -47,11 +47,7 @@ export function useGSAPScroll() {
       const maxScroll = documentHeight - windowHeight;
       const scrollProgress = maxScroll > 0 ? Math.min(Math.max(scrollY / maxScroll, 0), 1) : 0;
 
-      // Debug: Log first few updates and any time scrollProgress jumps significantly
       updateCount++;
-      if (updateCount <= 5 || (updateCount % 30 === 0 && updateCount <= 150)) {
-        console.log(`[useGSAPScroll] Update #${updateCount}: scrollY=${scrollY}, windowH=${windowHeight}, docH=${documentHeight}, maxScroll=${maxScroll}, progress=${scrollProgress.toFixed(3)}`);
-      }
 
       // Calculate velocity
       const delta = scrollY - lastScrollY.current;

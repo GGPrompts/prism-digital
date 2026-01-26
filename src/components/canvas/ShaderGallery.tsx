@@ -655,14 +655,16 @@ export function ShaderGallery({
     materialRef.current.uniforms.uAudioLevel.value = audioLevel;
   });
 
-  // Cleanup on unmount
+  // Cleanup on unmount (capture refs to avoid stale access)
   useEffect(() => {
+    const mesh = meshRef.current;
+    const material = materialRef.current;
     return () => {
-      if (meshRef.current) {
-        meshRef.current.geometry.dispose();
+      if (mesh) {
+        mesh.geometry.dispose();
       }
-      if (materialRef.current) {
-        materialRef.current.dispose();
+      if (material) {
+        material.dispose();
       }
     };
   }, []);

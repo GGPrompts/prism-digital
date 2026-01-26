@@ -2,7 +2,7 @@
 
 import { useRef, useMemo, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Html, Sphere, Line } from "@react-three/drei";
+import { Html, Sphere, Line, useCursor } from "@react-three/drei";
 import * as THREE from "three";
 
 interface DataPoint {
@@ -57,6 +57,9 @@ function DataPointMarker({ position, label, value, color, maxValue }: DataPointM
   const meshRef = useRef<THREE.Mesh>(null!);
   const [hovered, setHovered] = useState(false);
 
+  // Use drei's useCursor hook instead of direct DOM manipulation
+  useCursor(hovered);
+
   // Scale based on value
   const scale = 0.03 + (value / maxValue) * 0.05;
 
@@ -77,11 +80,9 @@ function DataPointMarker({ position, label, value, color, maxValue }: DataPointM
         onPointerOver={(e) => {
           e.stopPropagation();
           setHovered(true);
-          document.body.style.cursor = "pointer";
         }}
         onPointerOut={() => {
           setHovered(false);
-          document.body.style.cursor = "auto";
         }}
       >
         <sphereGeometry args={[1, 16, 16]} />

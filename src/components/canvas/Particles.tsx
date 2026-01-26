@@ -32,10 +32,10 @@ export function Particles({
 
   // Initialize particle data
   const particles = useMemo(() => {
-    const data = new Float32Array(count * 7); // x, y, z, vx, vy, vz, phase
+    const data = new Float32Array(count * 8); // x, y, z, vx, vy, vz, phase, sizeRandom
 
     for (let i = 0; i < count; i++) {
-      const idx = i * 7;
+      const idx = i * 8;
 
       // Position in a sphere
       const radius = 4 + Math.random() * 6;
@@ -53,6 +53,9 @@ export function Particles({
 
       // Phase offset for animation
       data[idx + 6] = Math.random() * Math.PI * 2;
+
+      // Pre-computed random size factor (avoid Math.random() in useFrame)
+      data[idx + 7] = 0.015 + Math.random() * 0.02;
     }
 
     return data;
@@ -91,7 +94,7 @@ export function Particles({
     const scrollInfluence = device?.isMobile ? 1.2 : 2.0;
 
     for (let i = 0; i < count; i++) {
-      const idx = i * 7;
+      const idx = i * 8;
 
       // Get particle data
       let x = particles[idx + 0];
@@ -101,6 +104,7 @@ export function Particles({
       const vy = particles[idx + 4];
       const vz = particles[idx + 5];
       const phase = particles[idx + 6];
+      const sizeRandom = particles[idx + 7];
 
       // Organic flowing motion using noise-like sine waves
       const flowSpeed = 0.3;
@@ -149,11 +153,10 @@ export function Particles({
       // Set instance transform
       tempObject.position.set(x, y, z);
 
-      // Size variation based on depth and scroll
+      // Size variation based on depth and scroll (using pre-computed sizeRandom)
       const depthScale = 1 - z / 15;
       const scrollScale = 1 + safeScroll * 0.3;
-      const baseSize = 0.015 + Math.random() * 0.02;
-      const scale = baseSize * depthScale * scrollScale;
+      const scale = sizeRandom * depthScale * scrollScale;
       tempObject.scale.setScalar(scale);
 
       tempObject.updateMatrix();
@@ -176,15 +179,16 @@ export function Particles({
     }
   });
 
-  // Resource cleanup on unmount
+  // Resource cleanup on unmount (capture ref to avoid stale access)
   useEffect(() => {
+    const mesh = meshRef.current;
     return () => {
-      if (meshRef.current) {
-        meshRef.current.geometry.dispose();
-        if (Array.isArray(meshRef.current.material)) {
-          meshRef.current.material.forEach((mat) => mat.dispose());
+      if (mesh) {
+        mesh.geometry.dispose();
+        if (Array.isArray(mesh.material)) {
+          mesh.material.forEach((mat) => mat.dispose());
         } else {
-          meshRef.current.material.dispose();
+          mesh.material.dispose();
         }
       }
     };
@@ -197,7 +201,6 @@ export function Particles({
   // Use normal blending in both modes for consistent visibility
   // Dark mode needs higher opacity since particles are light on dark
   const particleOpacity = isDark ? 0.7 : 0.35;
-  const blendMode = THREE.NormalBlending;
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
@@ -208,7 +211,6 @@ export function Particles({
         opacity={particleOpacity}
         depthWrite={false}
         vertexColors
-        blending={blendMode}
       />
     </instancedMesh>
   );

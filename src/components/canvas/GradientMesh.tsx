@@ -28,6 +28,25 @@ export function GradientMesh({
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
+  // Pre-allocated target colors for lerping (avoid GC in useFrame)
+  const targetColors = useMemo(
+    () => ({
+      dark: {
+        color1: new THREE.Color("#4c1d95"),
+        color2: new THREE.Color("#1e3a5f"),
+        color3: new THREE.Color("#831843"),
+        color4: new THREE.Color("#2e1065"),
+      },
+      light: {
+        color1: new THREE.Color("#7c3aed"),
+        color2: new THREE.Color("#3b82f6"),
+        color3: new THREE.Color("#db2777"),
+        color4: new THREE.Color("#6d28d9"),
+      },
+    }),
+    []
+  );
+
   // Shader uniforms for animation - theme-aware colors
   const uniforms = useMemo(
     () => ({
@@ -172,23 +191,12 @@ export function GradientMesh({
       ? scrollProgress
       : 0;
 
-    // Smoothly update colors based on theme
-    materialRef.current.uniforms.uColor1.value.lerp(
-      new THREE.Color(isDark ? "#4c1d95" : "#7c3aed"),
-      0.05
-    );
-    materialRef.current.uniforms.uColor2.value.lerp(
-      new THREE.Color(isDark ? "#1e3a5f" : "#3b82f6"),
-      0.05
-    );
-    materialRef.current.uniforms.uColor3.value.lerp(
-      new THREE.Color(isDark ? "#831843" : "#db2777"),
-      0.05
-    );
-    materialRef.current.uniforms.uColor4.value.lerp(
-      new THREE.Color(isDark ? "#2e1065" : "#6d28d9"),
-      0.05
-    );
+    // Smoothly update colors based on theme (using pre-allocated targets)
+    const colors = isDark ? targetColors.dark : targetColors.light;
+    materialRef.current.uniforms.uColor1.value.lerp(colors.color1, 0.05);
+    materialRef.current.uniforms.uColor2.value.lerp(colors.color2, 0.05);
+    materialRef.current.uniforms.uColor3.value.lerp(colors.color3, 0.05);
+    materialRef.current.uniforms.uColor4.value.lerp(colors.color4, 0.05);
     materialRef.current.uniforms.uOpacity.value = THREE.MathUtils.lerp(
       materialRef.current.uniforms.uOpacity.value,
       device?.isMobile ? 0.15 : (isDark ? 0.18 : 0.15),
@@ -196,14 +204,16 @@ export function GradientMesh({
     );
   });
 
-  // Resource cleanup on unmount
+  // Resource cleanup on unmount (capture refs to avoid stale access)
   useEffect(() => {
+    const mesh = meshRef.current;
+    const material = materialRef.current;
     return () => {
-      if (meshRef.current) {
-        meshRef.current.geometry.dispose();
-        if (materialRef.current) {
-          materialRef.current.dispose();
-        }
+      if (mesh) {
+        mesh.geometry.dispose();
+      }
+      if (material) {
+        material.dispose();
       }
     };
   }, []);
