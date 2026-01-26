@@ -14,7 +14,6 @@ import {
   BarChart3,
   Images,
 } from "lucide-react";
-import { Header } from "@/components/sections/Header";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -225,21 +224,16 @@ export default function DemosPage() {
         });
       }
 
-      // Demo cards staggered animation
+      // Demo cards staggered animation - animate on load, no scroll trigger
       const cards = cardsRef.current?.querySelectorAll(".demo-card");
       if (cards && !reducedMotion) {
         gsap.from(cards, {
-          y: 80,
+          y: 40,
           opacity: 0,
-          duration: 0.7,
-          stagger: 0.1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: cardsRef.current,
-            start: "top 80%",
-            end: "top 40%",
-            toggleActions: "play none none reverse",
-          },
+          duration: 0.6,
+          stagger: 0.08,
+          ease: "power2.out",
+          delay: 0.3, // Wait for page to settle
         });
       }
     }, sectionRef);
@@ -249,8 +243,6 @@ export default function DemosPage() {
 
   return (
     <>
-      <Header />
-
       {/* Solid background to cover the global 3D canvas */}
       <div className="fixed inset-0 z-0 bg-background">
         {/* Gradient accents */}
