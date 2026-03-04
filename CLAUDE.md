@@ -68,7 +68,7 @@ src/
 
 ### For Parallel Workers
 
-This project uses beads for issue tracking. Run `bd ready` to see available tasks.
+This project uses beads for issue tracking. Run `ggbd ready` to see available tasks.
 
 ### 3D Development Guidelines
 
